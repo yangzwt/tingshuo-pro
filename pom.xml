@@ -16,9 +16,12 @@
         <spring-cloud.version>2021.0.3</spring-cloud.version>
     </properties>
     <modules>
+        <!--听说AI智能模块-->
         <module>ai</module>
         <!--网关模块-->
         <module>gateway</module>
+        <!--听说组件化模块-->
+        <module>modules</module>
     </modules>
     <dependencies>
         <!-- SpringCloud 微服务 -->
