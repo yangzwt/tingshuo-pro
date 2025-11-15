@@ -1,0 +1,55 @@
+server:
+  port: 18080 # 服务端口
+spring:
+  application:
+    name: tingshuo-gateway # 服务名称
+  config:
+    import: optional:nacos:app.yaml
+  cloud:
+    nacos:
+      server-addr: 192.168.6.41:18848
+      username: nacos
+      password: Aa@123456
+      discovery:
+        enabled: true
+        namespace: tingshuo-pro
+      config:
+        enabled: true
+    gateway:
+      discovery:
+        locator:
+            enabled: true # 服务发现,可以通过"网关地址/服务名/**"的格式自动路由
+      routes:
+        - id: tingshuo-pro-user # 路由id
+          uri: lb://tingshuo-pro-user # 路由地址
+          predicates:
+            - Path=/api/** # 路径匹配
+            - Method=GET,POST # 请求方法匹配
+            - Header=X-Request-Id,\\d+ # 请求头匹配
+            - Query=token,.+ # 请求参数匹配
+            - After=2023-01-20T17:42:47.789-07:00[America/Denver] # 时间匹配
+            - Cookie=sessionId,.* # Cookie匹配
+            - Host=tingshuo-pro-user.com # 域名匹配
+          filters:
+            - StripPrefix=1 # 截取路径前缀
+            - AddRequestHeader=X-Gateway-Request, tracked-by-gateway  # 添加请求头
+            - AddResponseHeader=X-Gateway-Response, processed         # 添加响应头
+            - RewritePath=/api/(?<segment>.*), /$\{segment}           # 重写路径
+            - PrefixPath=/api/v1                                       # 添加路径前缀
+            - SetStatus=401                                            # 设置状态码
+      globalcors: # 全局跨域
+        cors-configurations: # 全局跨域
+          '[/**]':
+            allowed-origin-patterns:
+              - "*" # 允许跨域
+            allowed-headers: "*" # 允许请求头.全部放行
+            allowed-methods: # 允许请求方法
+              - GET
+              - POST
+              - PUT
+              - DELETE
+            allow-credentials: true # 允许cookie
+            max-age: 3600 # 缓存时间1小时
+
+
+
