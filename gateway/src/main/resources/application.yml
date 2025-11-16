@@ -10,10 +10,10 @@ spring:
       server-addr: 192.168.6.41:18848
       username: nacos
       password: Aa@123456
-      discovery:
+      discovery: # 服务注册
         enabled: true
         namespace: tingshuo-pro
-      config:
+      config: # 服务配置
         enabled: true
     gateway:
       discovery:
