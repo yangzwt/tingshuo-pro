@@ -23,6 +23,9 @@
         <!--听说组件化模块-->
         <module>modules</module>
         <module>modules/common</module>
+        <module>job</module>
+        <module>modules/redis</module>
+        <module>modules/mq</module>
     </modules>
     <dependencies>
 
