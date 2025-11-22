@@ -12,5 +12,13 @@
 <!--常用集成包-->
     <artifactId>modules</artifactId>
     <packaging>pom</packaging>
+    <modules>
+        <!--公用模块-->
+        <module>common</module>
+        <!--redis模块-->
+        <module>redis</module>
+        <!--消息队列-->
+        <module>mq</module>
+    </modules>
 
 </project>
