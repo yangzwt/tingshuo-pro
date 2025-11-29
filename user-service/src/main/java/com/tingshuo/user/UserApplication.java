@@ -11,7 +11,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
  * @version JDK 8
  * @className UserApplication (此处以class为例)
  * @date 2025/11/29-12:19
- * @description TODO
+ * @description
  */
 @SpringBootApplication
 @EnableDiscoveryClient
