@@ -16,13 +16,19 @@
         <spring-cloud.version>2021.0.8</spring-cloud.version>
     </properties>
     <modules>
-        <!--听说AI智能模块-->
-        <module>ai</module>
-        <!--网关模块-->
+        <!--听说网关模块-->
         <module>gateway</module>
         <!--听说组件化模块-->
         <module>modules</module>
         <module>job</module>
+        <!--业务类模块拆分开始-->
+        <!--听说AI智能模块-->
+        <module>ai-service</module>
+        <!--听说用户模块-->
+        <module>user-service</module>
+        <!--听说资产模块-->
+        <module>asset-service</module>
+        <!--业务类模块拆分结束-->
     </modules>
     <dependencies>
         <dependency>
