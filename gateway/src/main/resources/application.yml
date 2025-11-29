@@ -1,5 +1,19 @@
 server:
   port: 18080 # 服务端口
+spring:
+  cloud:
+    gateway:
+      routes: # 路由配置
+        - id: tingshuo-user-route # 用户路由id
+          uri: lb://tingshuo-user # 用户服务地址
+          predicates:
+            - Path=/user/** # 路径匹配
+        - id: tingshuo-asset-route # 资产服务地址路由id
+          uri: lb://tingshuo-asset # 资产服务地址
+          predicates:
+              - Path=/deposit/** # 匹配路径
+
+
 #spring:
 #  application:
 #    name: tingshuo-gateway # 服务名称
