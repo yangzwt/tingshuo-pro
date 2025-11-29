@@ -1,5 +1,6 @@
 server:
   port: 18080 # 服务端口
+# spring cloud gateway 配置
 spring:
   cloud:
     gateway:
@@ -12,3 +13,4 @@ spring:
           uri: lb://tingshuo-asset # 资产服务地址
           predicates:
               - Path=/deposit/** # 匹配路径
+              #- Path=/withdraw/**
