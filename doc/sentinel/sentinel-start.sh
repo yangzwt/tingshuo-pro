@@ -1,0 +1,1 @@
+nohup java -Dserver.port=19080 -Dcsp.sentinel.dashboard.server=localhost:19080 -jar sentinel-dashboard-1.8.9.jar > "sentinel.out" 2>&1 &

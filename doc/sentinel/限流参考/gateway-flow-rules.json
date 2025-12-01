@@ -1,0 +1,24 @@
+# 网关流控规则
+[
+  {
+    "resource": "asset-service-sentinel-rule",# 资源名称
+    "count": 100, # 阈值
+    "intervalSec": 1,# 统计时间间隔
+    "burst": 10, # 窗口内最大请求数
+    "controlBehavior": 0,# 流控方式 0-快速失败 1-WarmUp 2-匀速排队
+    "paramItem": {
+      "parseStrategy": 0 # 参数类型 0=route ID, 1=API 分组, 2=origin, 3=header, 4=URL 参数, 5=Cookie
+    }
+  },
+  {
+    "resource": "asset-service-sentinel-rule",#
+    "count": 5,# 阈值
+    "intervalSec": 1, # 统计时间间隔
+    "burst": 0,# 窗口内最大请求数
+    "controlBehavior": 0,# 流控方式 0-快速失败 1-WarmUp 2-匀速排队
+    "paramItem": {
+      "parseStrategy": 2,# 参数类型 按 origin（即请求来源 IP）
+      "fieldName": "remoteAddr" # 参数名名称
+    }
+  }
+]

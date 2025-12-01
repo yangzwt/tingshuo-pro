@@ -1,0 +1,11 @@
+# 资产模块流量控制规则
+[
+  {
+    "resource": "getUserById",# 资源名称
+    "limitApp": "default", # 应用名称
+    "grade": 1, # 限流类型 0: 线程数 1: QPS, 表示 QPS 模式
+    "count": 200, # QPS 表示最大 200 QPS
+    "strategy": 0, # 流量控制效果
+    "controlBehavior": 0 # 流量控制效果
+  }
+]
