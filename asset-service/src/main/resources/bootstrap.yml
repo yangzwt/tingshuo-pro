@@ -6,7 +6,7 @@ spring:
     # nacos 配置中心和服务发现配置
     nacos:
       # nacos 配置
-      server-addr: 192.168.6.41:18848
+      server-addr: 192.168.6.41:8848
       username: nacos
       password: Aa@123456
       namespace: tingshuo-pro
@@ -16,7 +16,7 @@ spring:
         # 服务命名空间
         namespace: tingshuo-pro
       config:
-        server-addr: 192.168.6.41:18848
+        server-addr: 192.168.6.41:8848
         username: nacos
         password: Aa@123456
         # 配置文件命名空间
@@ -39,5 +39,6 @@ spring:
           - data-id: gateway-config.yaml
             group: DEFAULT_GROUP
             refresh: true
+
 
 

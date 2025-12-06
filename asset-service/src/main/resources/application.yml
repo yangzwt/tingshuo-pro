@@ -1,17 +1,43 @@
 server:
   port: 18082 # 服务端口
+  error:
+    include-message: never # 错误信息
+    include-binding-errors: never # 绑定错误信息
+    include-stacktrace: never # 错误堆栈信息
+    include-exception: false #  错误信息
 spring:
   cloud:
+    feign:
+      client:
+        default:
+          connect-timeout: 5000
+          read-timeout: 6000
     sentinel:
+      #enable: true # sentinel 配置 开启时就加载 sentinel 到 feign
+      feign:
+        enabled: true # feign 配置
+      transport:
+        dashboard: 127.0.0.1:19080 # sentinel 控制台地址，暂时使用本地
+        port: 8719 # sentinel 端口
+        #client-ip: 10.68.0.154
       datasource:
         ds1:
             nacos:
-              server-addr: 192.168.6.41:18848
+              server-addr: 192.168.6.41:8848
               username: nacos
               password: Aa@123456
               namespace: tingshuo-pro
               group-id: DEFAULT_GROUP
               data-id: asset-service-sentinel-rule
               data-type: json
-              rule-type: flow
-
+              rule-type: flow # 限流
+        ds2:
+            nacos:
+              server-addr: 192.168.6.41:8848
+              username: nacos
+              password: Aa@123456
+              namespace: tingshuo-pro
+              group-id: DEFAULT_GROUP
+              data-id: asset-service-degrade-rules
+              data-type: json
+              rule-type: degrade # 降级 熔断

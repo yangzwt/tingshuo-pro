@@ -1,5 +1,6 @@
 package com.tingshuo.user.controller;
 
+import com.tingshuo.user.dto.UserDTO;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +24,19 @@ public class UserController {
      * @return
      */
     @GetMapping("/getUserById/{userId}")
-    public String getUserById(@PathVariable("userId") String userId){
-        return "tingshuo-user->"+userId;
+    public UserDTO getUserById(@PathVariable("userId") String userId){
+        try {
+            Thread.sleep(800);
+        }catch (Exception e){
+            System.out.println(e);
+        }
+
+        if ("123456".equals(userId)){
+            throw new RuntimeException("用户服务异常测试熔断");
+        }
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(userId);
+        userDTO.setName("tingshuo-user->"+userId);
+       return userDTO;
     }
 }

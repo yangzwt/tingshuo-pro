@@ -5,6 +5,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
+import javax.annotation.PostConstruct;
+
 /**
  * packageName com.tingshuo.asset
  * 描述 资产服务启动类
@@ -21,4 +23,5 @@ public class AssetApplication {
     public static void main(String[] args) {
         SpringApplication.run(AssetApplication.class,args);
     }
+
 }
