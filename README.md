@@ -13,6 +13,8 @@
 ### 12.基于SpringCloudAlibaba开发，支持服务注册与发现、配置中心、熔断降级等功能。
 ### 13.基于SpringCloudGateway开发，支持API网关。
 ### 14.基于Nacos支持服务注册与发现。
+#### 14.1.nacos-server版本2.2.3
+#### 14.2.nacos-client版本2.2.3
 ### 15.基于Seata支持分布式事务。
 ### 16.基于SkyWalking支持分布式追踪。
 ### 17.基于Sentinel支持流量控制，熔断降级。

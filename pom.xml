@@ -12,8 +12,14 @@
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <!--全局配置springboot版本-->
         <spring-boot.version>2.7.8</spring-boot.version>
+        <!--全局配置springCloud版本-->
         <spring-cloud.version>2021.0.8</spring-cloud.version>
+        <!--全局配置SpringCloudAlibaba版本-->
+        <spring-cloud-alibaba.version>2021.0.5.0</spring-cloud-alibaba.version>
+        <!--全局配置nacos客户端版本-->
+        <nacos.client.version>2.2.3</nacos.client.version>
     </properties>
     <modules>
         <!--听说网关模块-->
@@ -35,6 +41,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <!--nacos客户端配置-->
+        <dependency>
+            <groupId>com.alibaba.nacos</groupId>
+            <artifactId>nacos-client</artifactId>
+            <version>${nacos.client.version}</version>
         </dependency>
     </dependencies>
     <dependencyManagement>
@@ -59,7 +71,7 @@
             <dependency>
                 <groupId>com.alibaba.cloud</groupId>
                 <artifactId>spring-cloud-alibaba-dependencies</artifactId>
-                <version>2021.0.5.0</version>
+                <version>${spring-cloud-alibaba.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
