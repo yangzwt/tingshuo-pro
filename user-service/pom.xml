@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>user-service</artifactId>
-    <!--用戶模塊-->
+    <!--用戶模块-->
     <description>用户模块依赖包</description>
 
     <properties>

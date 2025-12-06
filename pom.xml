@@ -34,6 +34,12 @@
         <module>user-service</module>
         <!--听说资产模块-->
         <module>asset-service</module>
+        <!--听说商品模块-->
+        <module>product-service</module>
+        <!--听说订单模块-->
+        <module>order-service</module>
+        <!--听说库存模块-->
+        <module>storage-service</module>
         <!--业务类模块拆分结束-->
     </modules>
     <dependencies>
