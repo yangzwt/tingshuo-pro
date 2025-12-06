@@ -1,0 +1,155 @@
+=============== 创建数据库: tingshuo_user ===============
+CREATE DATABASE tingshuo_user;
+\c tingshuo_user;
+
+CREATE TABLE tingshuo_user (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(100),
+    balance NUMERIC(12,2) DEFAULT 0.00
+);
+
+INSERT INTO tingshuo_user (username, email, balance)
+VALUES ('alice', 'alice@example.com', 10000.00);
+
+CREATE TABLE undo_log (
+    id BIGSERIAL PRIMARY KEY,
+    branch_id BIGINT NOT NULL,
+    xid VARCHAR(128) NOT NULL,
+    context VARCHAR(128) NOT NULL,
+    rollback_info BYTEA NOT NULL,
+    log_status INTEGER NOT NULL,
+    log_created TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
+    log_modified TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
+    CONSTRAINT ux_undo_log UNIQUE (xid, branch_id)
+);
+
+
+=============== 创建数据库: tingshuo_order ===============
+CREATE DATABASE tingshuo_order;
+\c tingshuo_order;
+
+CREATE TABLE tingshuo_order (
+    id SERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    product_id BIGINT NOT NULL,
+    count INT NOT NULL,
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE undo_log (
+    id BIGSERIAL PRIMARY KEY,
+    branch_id BIGINT NOT NULL,
+    xid VARCHAR(128) NOT NULL,
+    context VARCHAR(128) NOT NULL,
+    rollback_info BYTEA NOT NULL,
+    log_status INTEGER NOT NULL,
+    log_created TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
+    log_modified TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
+    CONSTRAINT ux_undo_log UNIQUE (xid, branch_id)
+);
+
+
+=============== 创建数据库: tingshuo_product ===============
+CREATE DATABASE tingshuo_product;
+\c tingshuo_product;
+
+CREATE TABLE tingshuo_product (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100),
+    price NUMERIC(10,2),
+    description TEXT
+);
+
+INSERT INTO tingshuo_product (name, price, description)
+VALUES ('iPhone 15', 5999.00, 'Apple 最新款手机');
+
+CREATE TABLE undo_log (
+    id BIGSERIAL PRIMARY KEY,
+    branch_id BIGINT NOT NULL,
+    xid VARCHAR(128) NOT NULL,
+    context VARCHAR(128) NOT NULL,
+    rollback_info BYTEA NOT NULL,
+    log_status INTEGER NOT NULL,
+    log_created TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
+    log_modified TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
+    CONSTRAINT ux_undo_log UNIQUE (xid, branch_id)
+);
+
+
+=============== 创建数据库: tingshuo_storage ===============
+CREATE DATABASE tingshuo_storage;
+\c tingshuo_storage;
+
+CREATE TABLE tingshuo_storage (
+    id SERIAL PRIMARY KEY,
+    product_id BIGINT UNIQUE NOT NULL,
+    stock INT NOT NULL DEFAULT 0
+);
+
+INSERT INTO tingshuo_storage (product_id, stock)
+VALUES (1, 100);
+
+CREATE TABLE undo_log (
+    id BIGSERIAL PRIMARY KEY,
+    branch_id BIGINT NOT NULL,
+    xid VARCHAR(128) NOT NULL,
+    context VARCHAR(128) NOT NULL,
+    rollback_info BYTEA NOT NULL,
+    log_status INTEGER NOT NULL,
+    log_created TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
+    log_modified TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
+    CONSTRAINT ux_undo_log UNIQUE (xid, branch_id)
+);
+
+
+=========== Seata 事务状态存储库（必须！）===========
+CREATE DATABASE seata_server;
+
+\c seata_server;
+
+-- 全局事务表
+CREATE TABLE global_table (
+    xid VARCHAR(128) NOT NULL,
+    transaction_id BIGINT,
+    status TINYINT NOT NULL,
+    application_id VARCHAR(32),
+    transaction_service_group VARCHAR(32),
+    transaction_name VARCHAR(128),
+    timeout INT,
+    begin_time BIGINT,
+    application_data VARCHAR(2000),
+    gmt_create TIMESTAMP(0),
+    gmt_modified TIMESTAMP(0),
+    PRIMARY KEY (xid)
+);
+
+-- 分支事务表
+CREATE TABLE branch_table (
+    branch_id BIGINT NOT NULL,
+    xid VARCHAR(128) NOT NULL,
+    transaction_id BIGINT,
+    resource_id VARCHAR(256),
+    lock_key VARCHAR(512),
+    branch_type VARCHAR(8),
+    status TINYINT,
+    client_id VARCHAR(64),
+    application_data VARCHAR(2000),
+    gmt_create TIMESTAMP(0),
+    gmt_modified TIMESTAMP(0),
+    PRIMARY KEY (branch_id)
+);
+
+-- 全局锁表
+CREATE TABLE lock_table (
+    row_key VARCHAR(128) NOT NULL,
+    xid VARCHAR(128),
+    transaction_id BIGINT,
+    branch_id BIGINT NOT NULL,
+    resource_id VARCHAR(256),
+    table_name VARCHAR(32),
+    pk VARCHAR(36),
+    gmt_create TIMESTAMP(0),
+    gmt_modified TIMESTAMP(0),
+    PRIMARY KEY (row_key)
+);
