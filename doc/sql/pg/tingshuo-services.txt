@@ -104,9 +104,9 @@ CREATE TABLE undo_log (
 
 
 =========== Seata 事务状态存储库（必须！）===========
-CREATE DATABASE seata_server;
+CREATE DATABASE tingshuo_seata_serverdb;
 
-\c seata_server;
+\c tingshuo_seata_serverdb;
 
 -- 全局事务表
 CREATE TABLE global_table (
