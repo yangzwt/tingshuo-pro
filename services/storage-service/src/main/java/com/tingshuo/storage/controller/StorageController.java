@@ -1,6 +1,6 @@
 package com.tingshuo.storage.controller;
 
-import com.tingshuo.api.dto.CommonResult;
+import com.tingshuo.api.utils.CommonResult;
 import com.tingshuo.api.dto.DeductRequest;
 import com.tingshuo.storage.service.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;

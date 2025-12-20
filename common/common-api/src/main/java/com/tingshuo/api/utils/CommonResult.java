@@ -1,4 +1,4 @@
-package com.tingshuo.api.dto;
+package com.tingshuo.api.utils;
 
 import lombok.Data;
 

@@ -1,14 +1,19 @@
 package com.tingshuo.order.service.impl;
 
-import com.tingshuo.api.dto.CommonResult;
+import com.tingshuo.api.utils.CommonResult;
 import com.tingshuo.api.dto.DecreaseRequest;
 import com.tingshuo.api.dto.DeductRequest;
+import com.tingshuo.order.dao.OrderMapper;
+import com.tingshuo.order.entity.OrderEntity;
 import com.tingshuo.order.feign.ProductFeignClient;
 import com.tingshuo.order.feign.StorageFeignClient;
+import com.tingshuo.order.feign.UserFeignClient;
 import com.tingshuo.order.service.OrderService;
 import io.seata.spring.annotation.GlobalTransactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 /**
  * packageName com.tingshuo.order.service.impl
@@ -22,6 +27,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class OrderServiceImpl implements OrderService {
     @Autowired
+    private OrderMapper orderMapper;
+
+    @Autowired
+    private UserFeignClient userFeignClient;
+
+    @Autowired
     private StorageFeignClient storageFeignClient;
 
     @Autowired
@@ -30,7 +41,19 @@ public class OrderServiceImpl implements OrderService {
     @GlobalTransactional(timeoutMills = 60000, name = "create-order-tx")
     @Override
     public void createOrder(Long userId, Long productId, Integer count) {
+
+        // 1. 校验用户
+        if (!userFeignClient.UserExists(userId)){
+            throw new RuntimeException("用户不存在");
+        }
         // 1. 创建订单（本地 DB 操作）
+        OrderEntity orderEntity = new OrderEntity();
+        orderEntity.setUserId(userId);
+        orderEntity.setProductId(productId);
+        orderEntity.setCount(count);
+        orderEntity.setTotalPrice(new BigDecimal("6999").multiply(BigDecimal.valueOf(count)));
+        orderEntity.setStatus("0");
+        orderMapper.insert(orderEntity);
 
         // 2. 扣库存
         CommonResult<String> deduct = storageFeignClient.deduct(new DeductRequest(productId, count));

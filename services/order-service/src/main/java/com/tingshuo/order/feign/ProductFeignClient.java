@@ -1,6 +1,6 @@
 package com.tingshuo.order.feign;
 
-import com.tingshuo.api.dto.CommonResult;
+import com.tingshuo.api.utils.CommonResult;
 
 import com.tingshuo.api.dto.DecreaseRequest;
 import org.springframework.cloud.openfeign.FeignClient;

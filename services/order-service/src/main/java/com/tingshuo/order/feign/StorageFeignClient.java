@@ -1,6 +1,6 @@
 package com.tingshuo.order.feign;
 
-import com.tingshuo.api.dto.CommonResult;
+import com.tingshuo.api.utils.CommonResult;
 import com.tingshuo.api.dto.DeductRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
