@@ -7,22 +7,30 @@
         <groupId>com.tingshuo</groupId>
         <artifactId>tingshuo-pro</artifactId>
         <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
-    <packaging>pom</packaging>
-    <artifactId>common</artifactId>
-    <description>公共模块依赖包</description>
+
+    <artifactId>common-api</artifactId>
+    <description>通用接口依赖包</description>
+    <packaging>jar</packaging>
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    <modules>
-        <module>common-db</module>
-        <module>common-mq</module>
-        <module>common-redis</module>
-        <module>common-web</module>
-        <module>common-nacos-dc</module>
-        <module>common-seata</module>
-    </modules>
+    <dependencies>
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Validation API（可选）-->
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>

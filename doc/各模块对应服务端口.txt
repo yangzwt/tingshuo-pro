@@ -1,0 +1,12 @@
+<!--听说网关模块-->
+gateway 18080
+<!--听说用户模块-->
+user-service 18081
+<!--听说资产模块-->
+asset-service 18082
+<!--听说订单模块-->
+order-service 18083
+<!--听说商品模块-->
+product-service 18085
+<!--听说库存模块-->
+storage-service 18086

@@ -18,8 +18,7 @@
         <spring-cloud.version>2021.0.8</spring-cloud.version>
         <!--全局配置SpringCloudAlibaba版本-->
         <spring-cloud-alibaba.version>2021.0.5.0</spring-cloud-alibaba.version>
-        <!--全局配置nacos客户端版本-->
-        <nacos.client.version>2.2.3</nacos.client.version>
+
         <seata.version>1.4.2</seata.version>
     </properties>
     <modules>
@@ -35,6 +34,8 @@
         <module>common/common-redis</module>
         <module>common/common-web</module>
         <module>common/common-nacos-dc</module>
+        <module>common/common-seata</module>
+        <module>common/common-api</module>
         <!--业务类模块拆分开始-->
         <module>services</module>
         <!--听说AI智能模块-->
@@ -49,20 +50,21 @@
         <module>services/order-service</module>
         <!--听说库存模块-->
         <module>services/storage-service</module>
+
         <!--业务类模块拆分结束-->
     </modules>
     <dependencies>
-        <dependency>
+        <!--<dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
-        </dependency>
+        </dependency>-->
         <!--nacos客户端配置-->
-        <dependency>
+       <!-- <dependency>
             <groupId>com.alibaba.nacos</groupId>
             <artifactId>nacos-client</artifactId>
             <version>${nacos.client.version}</version>
-        </dependency>
+        </dependency>-->
 
 
     </dependencies>
@@ -92,9 +94,21 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <!--nacos注册中心和配置中心-->
             <dependency>
                 <groupId>com.tingshuo</groupId>
                 <artifactId>common-nacos-dc</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <!--seata分布式事务-->
+            <dependency>
+                <groupId>com.tingshuo</groupId>
+                <artifactId>common-seata</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.tingshuo</groupId>
+                <artifactId>common-db</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

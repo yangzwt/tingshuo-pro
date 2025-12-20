@@ -8,7 +8,7 @@ spring:
       # nacos 配置
       server-addr: 192.168.6.41:8848
       username: nacos
-      password: Aa@123456
+      password: Aa123456_
       namespace: tingshuo-pro
       discovery:
         # 是否启用服务注册
@@ -18,7 +18,7 @@ spring:
       config:
         server-addr: 192.168.6.41:8848
         username: nacos
-        password: Aa@123456
+        password: Aa123456_
         # 配置文件命名空间
         namespace: tingshuo-pro
         # 配置文件后缀格式
@@ -39,6 +39,32 @@ spring:
           - data-id: gateway-config.yaml
             group: DEFAULT_GROUP
             refresh: true
+      aliaba:
+        seata:
+          tx-service-group: my_test_tx_group
+seata:
+  registry:
+    type: nacos
+    nacos:
+      server-addr: 192.168.6.41:8848
+      namespace: tingshuo-pro
+      group: SEATA_GROUP
+      username: nacos
+      password: Aa123456_
+  config:
+    type: nacos
+    nacos:
+      server-addr: 192.168.6.41:8848
+      group: SEATA_GROUP
+      namespace: tingshuo-pro
+      username: nacos
+      password: Aa123456_
+  tx-service-group: my_tx_group
+  service:
+    vgroup-mapping:
+      my_tx_group: default
+
+
 
 
 

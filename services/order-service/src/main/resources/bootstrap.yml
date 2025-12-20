@@ -1,0 +1,61 @@
+spring:
+  application:
+    name: tingshuo-order # 应用名称，是Nacos配置Data ID的核心组成部分
+  cloud:
+    nacos:
+      server-addr: 192.168.6.41:8848
+      username: nacos
+      password: Aa123456_
+      namespace: tingshuo-pro # 命名空间
+      group: DEFAULT_GROUP
+      # 服务发现配置
+      discovery:
+        enabled: true # 开启服务注册与发现
+        # 可根据需要添加服务发现优化参数，如：
+        # heart-beat-interval: 30000
+        # heart-beat-timeout: 90000
+      # 配置中心配置
+      config:
+        file-extension: yaml # 配置文件格式
+        timeout: 5000 # 配置源超时时间(毫秒)
+        refresh-enabled: true # 开启动态刷新
+        # 共享配置文件列表
+        shared-configs:
+          - data-id: common-config.yaml
+            group: DEFAULT_GROUP
+            refresh: true
+        # 扩展配置文件列表（优先级高于共享配置）
+        extension-configs:
+          - data-id: gateway-config.yaml
+            group: DEFAULT_GROUP
+            refresh: true
+
+    # Seata 配置（修正了原配置中的拼写错误 'aliaba' -> 'alibaba'）
+    alibaba:
+      seata:
+        tx-service-group: my_test_tx_group # 建议与下方的seata.tx-service-group保持一致
+
+# Seata 客户端配置（与Nacos相关的部分，用于发现和配置Seata Server）
+seata:
+  application-id: ${spring.application.name} # 使用应用名
+  tx-service-group: my_test_tx_group # 事务组名称，需与Seata服务器配置对应
+  registry:
+    type: nacos
+    nacos:
+      server-addr: ${spring.cloud.nacos.server-addr}
+      namespace: ${spring.cloud.nacos.namespace}
+      group: SEATA_GROUP
+      username: ${spring.cloud.nacos.username}
+      password: ${spring.cloud.nacos.password}
+      application: seata-server # Seata Server在Nacos中的服务名
+  config:
+    type: nacos
+    nacos:
+      server-addr: ${spring.cloud.nacos.server-addr}
+      namespace: ${spring.cloud.nacos.namespace}
+      group: SEATA_GROUP
+      username: ${spring.cloud.nacos.username}
+      password: ${spring.cloud.nacos.password}
+  service:
+    vgroup-mapping:
+      my_tx_group: default # 将事务组映射到Seata Server的默认集群

@@ -7,6 +7,7 @@
         <groupId>com.tingshuo</groupId>
         <artifactId>tingshuo-pro</artifactId>
         <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
     <!--听说资产模块-包括理财,存款-->
     <artifactId>asset-service</artifactId>
@@ -23,17 +24,8 @@
         </dependency>
         <!--nacos服务注册与发现-->
         <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
-        </dependency>
-        <!--nacos 配置中心拉取配置信息-->
-        <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-bootstrap</artifactId>
+            <groupId>com.tingshuo</groupId>
+            <artifactId>common-nacos-dc</artifactId>
         </dependency>
         <!--远程调用openfeign-->
         <dependency>
@@ -63,6 +55,11 @@
         <dependency>
             <groupId>com.alibaba.csp</groupId>
             <artifactId>sentinel-transport-simple-http</artifactId>
+        </dependency>
+        <!--seata分布式事务管理-->
+        <dependency>
+            <groupId>com.tingshuo</groupId>
+            <artifactId>common-seata</artifactId>
         </dependency>
     </dependencies>
 

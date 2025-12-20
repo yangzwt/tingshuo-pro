@@ -13,8 +13,21 @@
     <!--nacos服务注册与发现-->
     <description>nacos-discovery-client</description>
     <properties>
+        <!--全局配置nacos客户端版本-->
+        <nacos.client.version>2.2.3</nacos.client.version>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!--nacos客户端配置-->
+        <dependency>
+            <groupId>com.alibaba.nacos</groupId>
+            <artifactId>nacos-client</artifactId>
+            <version>${nacos.client.version}</version>
+        </dependency>
         <!--nacos 注册中心配置-->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
@@ -29,6 +42,16 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-bootstrap</artifactId>
+        </dependency>
+        <!-- OpenFeign -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+        <!-- 负载均衡（Feign 需要）-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
         </dependency>
     </dependencies>
 

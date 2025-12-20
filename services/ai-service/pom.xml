@@ -16,5 +16,22 @@
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+    <dependencies>
+        <!--处理业务-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <!--nacos注册和配置中心-->
+        <dependency>
+            <groupId>com.tingshuo</groupId>
+            <artifactId>common-nacos-dc</artifactId>
+        </dependency>
+        <!--seata分布式事务管理-->
+        <dependency>
+            <groupId>com.tingshuo</groupId>
+            <artifactId>common-seata</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>

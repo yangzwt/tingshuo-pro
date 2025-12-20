@@ -1,0 +1,64 @@
+# 应用服务器端口
+server:
+  port: 18083
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://192.168.6.41:5432/tingshuo_userdb?useSSL=false
+    username: userdb
+    password: Aa@123456
+  cloud:
+    # Feign 客户端配置
+    feign:
+      client:
+        config:
+          default: # 针对所有Feign客户端的默认配置
+            connect-timeout: 5000
+            read-timeout: 6000
+            # 可添加其他配置，如日志级别: logger-level: basic
+      sentinel:
+        enabled: true # 开启Feign对Sentinel的支持
+
+    # Sentinel 配置
+    sentinel:
+      enabled: true # 启用Sentinel
+      eager: true # 立即初始化Sentinel，避免懒加载导致首次调用无保护
+      transport:
+        dashboard: 127.0.0.1:19080 # Sentinel控制台地址
+        port: 8719 # 启动该端口的HTTP Server，用于与Sentinel控制台交互
+      # 数据源配置（将规则持久化到Nacos）
+      datasource:
+        # 流控规则数据源
+        ds1:
+          nacos:
+            server-addr: 192.168.6.41:8848
+            username: nacos
+            password: Aa123456_
+            namespace: tingshuo-pro
+            group-id: DEFAULT_GROUP
+            data-id: asset-service-sentinel-rule # 建议改为: ${spring.application.name}-sentinel-flow-rules
+            data-type: json
+            rule-type: flow
+        # 降级/熔断规则数据源
+        ds2:
+          nacos:
+            server-addr: 192.168.6.41:8848
+            username: nacos
+            password: Aa123456_
+            namespace: tingshuo-pro
+            group-id: DEFAULT_GROUP
+            data-id: asset-service-degrade-rules # 建议改为: ${spring.application.name}-sentinel-degrade-rules
+            data-type: json
+            rule-type: degrade
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# 日志配置（可选，用于优化日志输出，避免过多干扰信息）
+logging:
+  level:
+    com.alibaba.cloud.sentinel: INFO
+    com.alibaba.csp.sentinel: WARN
+    io.seata: INFO
+    org.springframework.cloud.openfeign: INFO
