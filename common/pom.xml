@@ -3,22 +3,16 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <!--继承父类统一管理-->
     <parent>
         <groupId>com.tingshuo</groupId>
         <artifactId>tingshuo-pro</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
-<!--常用集成包-->
-    <artifactId>modules</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <!--公用模块-->
-        <module>common</module>
-        <!--redis模块-->
-        <module>redis</module>
-        <!--消息队列-->
-        <module>mq</module>
-    </modules>
+
+    <artifactId>common</artifactId>
+    <description>公共模块依赖包</description>
+
+    <properties>
+    </properties>
 
 </project>

@@ -24,7 +24,7 @@ spring:
           nacos:
             server-addr: 192.168.6.41:8848
             username: nacos
-            password: Aa@123456
+            password: Aa123456_
             namespace: tingshuo-pro
             group-id: DEFAULT_GROUP
             data-id: gateway-flow-rules # 配置文件名称

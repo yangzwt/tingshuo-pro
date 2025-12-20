@@ -20,26 +20,35 @@
         <spring-cloud-alibaba.version>2021.0.5.0</spring-cloud-alibaba.version>
         <!--全局配置nacos客户端版本-->
         <nacos.client.version>2.2.3</nacos.client.version>
+        <seata.version>1.4.2</seata.version>
     </properties>
     <modules>
         <!--听说网关模块-->
         <module>gateway</module>
-        <!--听说组件化模块-->
-        <module>modules</module>
+        <!--听说调度模块-->
         <module>job</module>
+
+        <!--公共模块-->
+        <module>common</module>
+        <module>common/common-db</module>
+        <module>common/common-mq</module>
+        <module>common/common-redis</module>
+        <module>common/common-web</module>
+        <module>common/common-nacos-dc</module>
         <!--业务类模块拆分开始-->
+        <module>services</module>
         <!--听说AI智能模块-->
-        <module>ai-service</module>
+        <module>services/ai-service</module>
         <!--听说用户模块-->
-        <module>user-service</module>
+        <module>services/user-service</module>
         <!--听说资产模块-->
-        <module>asset-service</module>
+        <module>services/asset-service</module>
         <!--听说商品模块-->
-        <module>product-service</module>
+        <module>services/product-service</module>
         <!--听说订单模块-->
-        <module>order-service</module>
+        <module>services/order-service</module>
         <!--听说库存模块-->
-        <module>storage-service</module>
+        <module>services/storage-service</module>
         <!--业务类模块拆分结束-->
     </modules>
     <dependencies>
@@ -54,6 +63,8 @@
             <artifactId>nacos-client</artifactId>
             <version>${nacos.client.version}</version>
         </dependency>
+
+
     </dependencies>
     <dependencyManagement>
         <dependencies>
@@ -80,6 +91,11 @@
                 <version>${spring-cloud-alibaba.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.tingshuo</groupId>
+                <artifactId>common-nacos-dc</artifactId>
+                <version>${project.version}</version>
             </dependency>
 
         </dependencies>
