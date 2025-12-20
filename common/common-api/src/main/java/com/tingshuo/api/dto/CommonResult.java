@@ -8,7 +8,7 @@ import lombok.Data;
  * @author tingshuo
  * @version JDK 8
  * @className CommonResult (此处以class为例)
- * @date 2025/12/20-17:01
+ * @date 2025/12/20 17:01
  * @description 类描述信息
  */
 @Data
