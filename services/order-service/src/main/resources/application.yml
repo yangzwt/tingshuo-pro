@@ -5,7 +5,7 @@ server:
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://192.168.6.41:5432/tingshuo_userdb?useSSL=false
+    url: jdbc:postgresql://192.168.6.41:5432/tingshuo_userdb?useSSL=false&currentSchema=schema_userdb
     username: userdb
     password: Aa@123456
   cloud:
@@ -53,7 +53,14 @@ spring:
             rule-type: degrade
 mybatis-plus:
   configuration:
+    use-generated-keys: true # 开启主键回填
+    map-underscore-to-camel-case: true # 开启下划线转驼峰
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      # id-type: auto
+      insert-strategy: IGNORED   # ← 强制所有字段参与 INSERT，包括 id=null
+
 
 # 日志配置（可选，用于优化日志输出，避免过多干扰信息）
 logging:

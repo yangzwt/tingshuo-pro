@@ -3,9 +3,10 @@ package com.tingshuo.order.feign;
 import com.tingshuo.api.utils.CommonResult;
 
 import com.tingshuo.api.dto.DecreaseRequest;
+import com.tingshuo.order.dto.ProductDTO;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
+
 /**
  * packageName com.tingshuo.order.feign
  *
@@ -15,13 +16,21 @@ import org.springframework.web.bind.annotation.RequestBody;
  * @date 2025/12/20-17:01
  * @description 类描述信息 订单服务调用商品服务
  */
-@FeignClient(name = "product-service")
+@FeignClient(name = "tingshuo-product")
 public interface ProductFeignClient {
     /**
-     * 减库存
-     * @param request
+     * 查询商品信息
+     * @param id
      * @return
      */
-    @PostMapping("/product/decrease")
-    CommonResult<String> decrease(@RequestBody DecreaseRequest request);
+    @GetMapping("/product/{id}")
+    ProductDTO getProduct(@PathVariable("id") Long id);
+    /**
+     * 减库存
+     * @param id
+     * @return
+     */
+    @PostMapping("/product/decrease/{id}")
+    CommonResult<String> decrease(@PathVariable("id") Long id,@RequestParam("count") Integer count);
+
 }

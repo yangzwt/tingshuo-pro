@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
  * @date 2025/12/20-19:02
  * @description 接口描述信息 用户服务接口
  */
-@FeignClient(name = "user-service")
+@FeignClient(name = "tingshuo-user")
 public interface UserFeignClient {
     /**
      * 判断用户是否存在
@@ -21,5 +21,5 @@ public interface UserFeignClient {
      * @return
      */
     @GetMapping("/user/{id}")
-    boolean UserExists(@PathVariable("id") Long id);
+    boolean userExists(@PathVariable("id") Long id);
 }

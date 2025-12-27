@@ -1,6 +1,8 @@
 package com.tingshuo.user.controller;
 
 import com.tingshuo.user.dto.UserDTO;
+import com.tingshuo.user.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/user")
 public class UserController {
+    @Autowired
+    private UserService userService;
     /**
      * 获取用户信息
      * @param userId
@@ -38,5 +42,9 @@ public class UserController {
         userDTO.setId(userId);
         userDTO.setName("tingshuo-user->"+userId);
        return userDTO;
+    }
+    @GetMapping("/{id}")
+    boolean userExists(@PathVariable("id") Long id){
+        return userService.userExists(id);
     }
 }

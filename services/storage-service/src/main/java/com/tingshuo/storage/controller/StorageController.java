@@ -6,6 +6,7 @@ import com.tingshuo.storage.service.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -23,8 +24,8 @@ public class StorageController {
     private StorageService storageService;
 
     @PostMapping("/storage/deduct")
-    public CommonResult<String> deduct(@RequestBody DeductRequest request) {
-        storageService.deduct(request.getProductId(), request.getCount());
+    public CommonResult<String> deduct(@RequestParam Long productId, @RequestParam Integer count) {
+        storageService.deduct(productId, count);
         return CommonResult.success("库存扣减成功");
     }
 }

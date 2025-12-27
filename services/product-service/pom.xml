@@ -34,11 +34,20 @@
             <groupId>com.tingshuo</groupId>
             <artifactId>common-seata</artifactId>
         </dependency>
+        <!--数据库连接池-->
+        <dependency>
+            <groupId>com.tingshuo</groupId>
+            <artifactId>common-db</artifactId>
+        </dependency>
         <!--商品服务-->
         <dependency>
             <groupId>com.tingshuo</groupId>
             <artifactId>common-api</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
         </dependency>
     </dependencies>
 

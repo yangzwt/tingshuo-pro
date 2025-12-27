@@ -5,6 +5,7 @@ spring:
   cloud:
     gateway:
       routes: # 路由配置
+        # ========== 用户服务 ==========
         - id: tingshuo-user-route # 用户路由id
           uri: lb://tingshuo-user # 用户服务地址
           predicates:
@@ -13,7 +14,25 @@ spring:
           uri: lb://tingshuo-asset # 资产服务地址
           predicates:
               - Path=/deposit/** # 匹配路径
-              #- Path=/withdraw/**
+        # ========== 订单服务 ==========
+        - id: tingshuo-order-route
+          uri: lb://tingshuo-order
+          predicates:
+              - Path=/order/**
+        # ========== 库存服务 ==========
+        - id: tingshuo-storage-route
+          uri: lb://tingshuo-storage
+          predicates:
+              - Path=/storage/**
+
+        # ========== 商品服务 ==========
+        - id: tingshuo-product-route
+          uri: lb://tingshuo-product
+          predicates:
+              - Path=/product/**
+
+
+
     # sentinel 限流配置
     sentinel:
       transport:

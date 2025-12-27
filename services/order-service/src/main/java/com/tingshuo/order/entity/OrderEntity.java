@@ -2,6 +2,7 @@ package com.tingshuo.order.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -16,8 +17,10 @@ import java.math.BigDecimal;
  * @description 类描述信息 订单实体类
  */
 @Data
+@TableName("tingshuo_order")
 public class OrderEntity {
-    @TableId(type = IdType.AUTO)
+    //@TableId(value = "id",type = IdType.AUTO)
+    @TableId(value = "id",type = IdType.NONE)
     private Long id;
     private Long userId;
     private Long productId;
