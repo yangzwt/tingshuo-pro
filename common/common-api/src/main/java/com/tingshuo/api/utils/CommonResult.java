@@ -1,6 +1,8 @@
 package com.tingshuo.api.utils;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * packageName com.tingshuo.api.dto
@@ -12,6 +14,7 @@ import lombok.Data;
  * @description 类描述信息
  */
 @Data
+@NoArgsConstructor
 public class CommonResult<T> {
     private int code;
     private String message;
