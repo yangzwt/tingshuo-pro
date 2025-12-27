@@ -1,0 +1,105 @@
+------------------------------seata系统--表结束--------------
+-- 注意 1.系统表只能建在public下
+-- 创建全局事务表
+CREATE TABLE IF NOT EXISTS global_table
+(
+    xid                       VARCHAR(128) NOT NULL,
+    transaction_id            BIGINT,
+    status                    SMALLINT     NOT NULL,
+    application_id            VARCHAR(32),
+    transaction_service_group VARCHAR(32),
+    transaction_name          VARCHAR(128),
+    timeout                   INT,
+    begin_time                BIGINT,
+    application_data          VARCHAR(2000),
+    gmt_create                TIMESTAMP(6),
+    gmt_modified              TIMESTAMP(6),
+    PRIMARY KEY (xid)
+    );
+
+CREATE INDEX IF NOT EXISTS idx_status_gmt_modified ON global_table (status, gmt_modified);
+CREATE INDEX IF NOT EXISTS idx_transaction_id ON global_table (transaction_id);
+
+-- 创建分支事务表
+CREATE TABLE IF NOT EXISTS branch_table
+(
+    branch_id         BIGINT       NOT NULL,
+    xid               VARCHAR(128) NOT NULL,
+    transaction_id    BIGINT,
+    resource_group_id VARCHAR(32),
+    resource_id       VARCHAR(256),
+    branch_type       VARCHAR(8),
+    status            SMALLINT,
+    client_id         VARCHAR(64),
+    application_data  VARCHAR(2000),
+    gmt_create        TIMESTAMP(6),
+    gmt_modified      TIMESTAMP(6),
+    PRIMARY KEY (branch_id)
+    );
+
+CREATE INDEX IF NOT EXISTS idx_xid ON branch_table (xid);
+
+-- 创建全局锁表
+CREATE TABLE IF NOT EXISTS lock_table
+(
+    row_key        VARCHAR(128) NOT NULL,
+    xid            VARCHAR(128),
+    transaction_id BIGINT,
+    branch_id      BIGINT       NOT NULL,
+    resource_id    VARCHAR(256),
+    table_name     VARCHAR(32),
+    pk             VARCHAR(36),
+    status         SMALLINT     NOT NULL DEFAULT 0,
+    gmt_create     TIMESTAMP(6),
+    gmt_modified   TIMESTAMP(6),
+    PRIMARY KEY (row_key)
+    );
+
+CREATE INDEX IF NOT EXISTS idx_status ON lock_table (status);
+CREATE INDEX IF NOT EXISTS idx_branch_id ON lock_table (branch_id);
+CREATE INDEX IF NOT EXISTS idx_xid ON lock_table (xid);
+
+-- 创建分布式锁表（用于Seata Server集群）
+CREATE TABLE IF NOT EXISTS distributed_lock
+(
+    lock_key       CHAR(20)    NOT NULL,
+    lock_value     VARCHAR(20) NOT NULL,
+    expire         BIGINT,
+    PRIMARY KEY (lock_key)
+    );
+
+-- 初始化分布式锁数据
+INSERT INTO distributed_lock (lock_key, lock_value, expire)
+VALUES ('AsyncCommitting', ' ', 0),
+       ('RetryCommitting', ' ', 0),
+       ('RetryRollbacking', ' ', 0),
+       ('TxTimeoutCheck', ' ', 0);
+
+------------------------------seata系统--表结束--------------
+------------------------------seata业务--表开始--------------
+-- 创建Undo日志表--业务表
+CREATE TABLE IF NOT EXISTS undo_log
+(
+    id            SERIAL PRIMARY KEY,
+    branch_id     BIGINT                     NOT NULL,
+    xid           VARCHAR(100)               NOT NULL,
+    context       VARCHAR(128)               NOT NULL,
+    rollback_info BYTEA                      NOT NULL,
+    log_status    INT                        NOT NULL,
+    log_created   TIMESTAMP                  NOT NULL,
+    log_modified  TIMESTAMP                  NOT NULL,
+    ext           VARCHAR(100)
+);
+
+COMMENT ON TABLE undo_log IS 'AT transaction mode undo table';
+
+-- 创建唯一索引以确保事务记录的唯一性
+CREATE UNIQUE INDEX IF NOT EXISTS ux_undo_log ON undo_log (xid, branch_id);
+
+---解释信息
+xid 全局事务ID，是串联整个分布式事务的关键标识
+branch_id 分支事务ID。
+rollback_info 回滚信息，存储了数据修改前的"前镜像"和修改后的"后镜像"，Seata 据此生成反向SQL进行回滚，此处使用 PostgreSQL 的 BYTEA类型来存储二进制大对象。
+log_status 日志状态，用于标识该回滚日志是否可用（例如，0-正常状态，1-防御状态）
+
+    ------------------------------seata业务--表结束--------------
