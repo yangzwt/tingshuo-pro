@@ -1,0 +1,5 @@
+### 更新数据库开发规范
+数据库：ting_user, ting_product, ting_order, ting_ai, ting_asset, ting_storage
+用户（读写）：ting_user_app, ting_product_app, ting_order_app, ting_ai_app, ting_asset_app, ting_storage_app
+只读用户：ting_user_ro, ting_product_ro, ting_order_ro, ting_ai_ro, ting_asset_ro,ting_storage_ro
+Schema：user, product, order, ai, asset, storage
