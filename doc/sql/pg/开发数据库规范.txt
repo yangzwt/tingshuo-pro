@@ -1,5 +1,219 @@
 ### 更新数据库开发规范
-数据库：ting_user, ting_product, ting_order, ting_ai, ting_asset, ting_storage
-用户（读写）：ting_user_app, ting_product_app, ting_order_app, ting_ai_app, ting_asset_app, ting_storage_app
-只读用户：ting_user_ro, ting_product_ro, ting_order_ro, ting_ai_ro, ting_asset_ro,ting_storage_ro
-Schema：user, product, order, ai, asset, storage
+数据库：ting_user, ting_product, ting_order, ting_storage, ting_ai, ting_asset
+用户（读写）：ting_user_app, ting_product_app, ting_order_app, ting_storage_app, ting_ai_app, ting_asset_app
+只读用户：ting_user_ro, ting_product_ro, ting_order_ro, ting_storage_ro, ting_ai_ro, ting_asset_ro
+Schema：user, products, orders, storages, ais, assets,
+---ting_user 用户数据库
+---ting_product 商品数据库
+---ting_order 订单数据库
+---ting_storage 库存数据库
+---ting_ai 智能ai数据库
+---ting_asset 资产数据库
+
+---相关业务库建库及授权语句语句---
+---一、tingshuo 用户数据库开始---
+--1.新建用户，并给用户与创建数据库权限,需要使用高权类似postgresql等高权用户
+--CREATE USER ting_user_app WITH PASSWORD 'Aa@123456' CREATEDB;--表示可以在运行时动态执行创建数据库的权限，高危
+CREATE USER ting_user_app WITH PASSWORD 'Aa@123456' ;
+-- 2.新建数据库指定数据库编码格式，创建时可以指定对应编码和排序问题
+CREATE DATABASE ting_user ENCODING = 'UTF8';
+--CREATE DATABASE ting_user ENCODING = 'UTF8' LC_COLLATE = 'en_US.UTF-8' LC_CTYPE = 'en_US.UTF-8' TEMPLATE = template0;
+--3.授权用户具有创建 schema的高权权限，允许用户在该库中创建 Schema 的关键
+GRANT CREATE ON DATABASE ting_user TO ting_user_app;
+--查看授权是否成功
+SELECT datname, datacl FROM pg_database WHERE datname = 'ting_user';
+--4.创建 对应用户的schema，具有创建 schema的用户，且需要在对应的用户下执行
+-- 以 ting_user_app 身份连接 ting_user 数据库后执行
+CREATE SCHEMA users;
+--5.其他高权执行
+--CREATE SCHEMA users AUTHORIZATION ting_user_app;
+--授权对应schema 指定用户可以使用所有权限，授予 Schema 全部权限
+GRANT ALL ON SCHEMA users  TO ting_user_app;
+--6.指定用户具有连接权限，授予 CONNECT 权限
+GRANT CONNECT ON DATABASE ting_user TO ting_user_app;
+--7.授予数据库所有权限给指定用户， PostgreSQL 中，1.数据库级别的 ALL PRIVILEGES 只包含 CONNECT, CREATE, TEMPORARY。2.它不包含对表、Schema、函数等对象的权限
+--GRANT ALL PRIVILEGES ON DATABASE ting_user TO ting_user_app;
+--授予对特定 schema 下所有表的增删改查等权限，ON ALL TABLES IN SCHEMA 一次只能指定一个 Schema，不能写 public,users
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO ting_user_app;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA users TO ting_user_app;
+--8.授予模式使用权限
+GRANT USAGE, CREATE ON SCHEMA public TO ting_user_app;
+GRANT USAGE, CREATE ON SCHEMA users TO ting_user_app;
+--9.对现有对象授权，具有创建表和创建序列权限，和上面7重复
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ting_user_app;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA users TO ting_user_app;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO ting_user_app;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA users TO ting_user_app;
+--10.设置默认权限，保障未来创建的对象自动授权
+-- 假设未来表是由当前执行用户（如 postgres）创建的，要自动授权给 ting_user_app
+--重要提醒：ALTER DEFAULT PRIVILEGES 默认只影响当前角色创建的对象。如果你希望 ting_user_app 自己创建的表自动拥有权限（给自己），其实不需要设——因为 owner 自动拥有全部权限。
+--通常 DEFAULT PRIVILEGES 用于：A 用户创建对象，自动授权给 B 用户。
+--如果你是超级用户执行这些命令，那么默认权限只适用于超级用户未来创建的表，而不是 ting_user_app 创建的表
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO ting_user_app;
+ALTER DEFAULT PRIVILEGES IN SCHEMA users GRANT ALL PRIVILEGES ON TABLES TO ting_user_app;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON SEQUENCES TO ting_user_app;
+ALTER DEFAULT PRIVILEGES IN SCHEMA users GRANT ALL PRIVILEGES ON SEQUENCES TO ting_user_app;
+---tingshuo 用户数据库结束---
+
+---二、tingshuo 商品数据库开始---
+--1.新建用户，并给用户与创建数据库权限,需要使用高权类似postgresql等高权用户
+--CREATE USER ting_product_app WITH PASSWORD 'Aa@123456' CREATEDB;
+CREATE USER ting_product_app WITH PASSWORD 'Aa@123456' ;
+ --2.新建数据库指定数据库编码格式
+CREATE DATABASE ting_product ENCODING = 'UTF8';
+--3.授权用户具有创建 schema的高权权限，允许用户在该库中创建 Schema 的关键
+GRANT CREATE ON DATABASE ting_product TO ting_product_app;
+--4.创建 对应用户的schema，具有创建 schema的用户，且需要在对应的用户下执行
+CREATE SCHEMA products;
+--5.其他高权执行
+GRANT ALL ON SCHEMA products  TO ting_product_app;
+--6.指定用户具有连接权限，授予 CONNECT 权限
+GRANT CONNECT ON DATABASE ting_product TO ting_product_app;
+--7.授予数据库所有权限给指定用户， PostgreSQL 中，1.数据库级别的 ALL PRIVILEGES 只包含 CONNECT, CREATE, TEMPORARY。2.它不包含对表、Schema、函数等对象的权限
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO ting_product_app;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA products TO ting_product_app;
+--8.授予模式使用权限
+GRANT USAGE, CREATE ON SCHEMA public TO ting_product_app;
+GRANT USAGE, CREATE ON SCHEMA products TO ting_product_app;
+--9.对现有对象授权，具有创建表和创建序列权限，和上面7重复
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ting_product_app;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA products TO ting_product_app;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO ting_product_app;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA products TO ting_product_app;
+--10.设置默认权限，保障未来创建的对象自动授权
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO ting_product_app;
+ALTER DEFAULT PRIVILEGES IN SCHEMA products GRANT ALL PRIVILEGES ON TABLES TO ting_product_app;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON SEQUENCES TO ting_product_app;
+ALTER DEFAULT PRIVILEGES IN SCHEMA products GRANT ALL PRIVILEGES ON SEQUENCES TO ting_product_app;
+---tingshuo 商品数据库结束---
+
+---三、tingshuo 订单数据库开始---
+--1.新建用户，并给用户与创建数据库权限,需要使用高权类似postgresql等高权用户
+--CREATE USER ting_order_app WITH PASSWORD 'Aa@123456' CREATEDB;
+CREATE USER ting_order_app WITH PASSWORD 'Aa@123456' ;
+ --2.新建数据库指定数据库编码格式
+CREATE DATABASE ting_order ENCODING = 'UTF8';
+--3.授权用户具有创建 schema的高权权限，允许用户在该库中创建 Schema 的关键
+GRANT CREATE ON DATABASE ting_order TO ting_order_app;
+--4.创建 对应用户的schema，具有创建 schema的用户，且需要在对应的用户下执行
+CREATE SCHEMA orders;
+--5.其他高权执行
+GRANT ALL ON SCHEMA orders  TO ting_order_app;
+--6.指定用户具有连接权限，授予 CONNECT 权限
+GRANT CONNECT ON DATABASE ting_order TO ting_order_app;
+--7.授予数据库所有权限给指定用户， PostgreSQL 中，1.数据库级别的 ALL PRIVILEGES 只包含 CONNECT, CREATE, TEMPORARY。2.它不包含对表、Schema、函数等对象的权限
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO ting_order_app;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA orders TO ting_order_app;
+--8.授予模式使用权限
+GRANT USAGE, CREATE ON SCHEMA public TO ting_order_app;
+GRANT USAGE, CREATE ON SCHEMA orders TO ting_order_app;
+--9.对现有对象授权，具有创建表和创建序列权限，和上面7重复
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ting_order_app;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA orders TO ting_order_app;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO ting_order_app;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA orders TO ting_order_app;
+--10.设置默认权限，保障未来创建的对象自动授权
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO ting_order_app;
+ALTER DEFAULT PRIVILEGES IN SCHEMA orders GRANT ALL PRIVILEGES ON TABLES TO ting_order_app;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON SEQUENCES TO ting_order_app;
+ALTER DEFAULT PRIVILEGES IN SCHEMA orders GRANT ALL PRIVILEGES ON SEQUENCES TO ting_order_app;
+---tingshuo 订单数据库结束---
+
+---四、tingshuo 库存数据库开始---
+--1.新建用户，并给用户与创建数据库权限,需要使用高权类似postgresql等高权用户
+--CREATE USER ting_storage_app WITH PASSWORD 'Aa@123456' CREATEDB;
+CREATE USER ting_storage_app WITH PASSWORD 'Aa@123456' ;
+ --2.新建数据库指定数据库编码格式
+CREATE DATABASE ting_storage ENCODING = 'UTF8';
+--3.授权用户具有创建 schema的高权权限，允许用户在该库中创建 Schema 的关键
+GRANT CREATE ON DATABASE ting_storage TO ting_storage_app;
+--4.创建 对应用户的schema，具有创建 schema的用户，且需要在对应的用户下执行
+CREATE SCHEMA storages;
+--5.其他高权执行
+GRANT ALL ON SCHEMA storages  TO ting_storage_app;
+--6.指定用户具有连接权限，授予 CONNECT 权限
+GRANT CONNECT ON DATABASE ting_storage TO ting_storage_app;
+--7.授予数据库所有权限给指定用户， PostgreSQL 中，1.数据库级别的 ALL PRIVILEGES 只包含 CONNECT, CREATE, TEMPORARY。2.它不包含对表、Schema、函数等对象的权限
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO ting_storage_app;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA storages TO ting_storage_app;
+--8.授予模式使用权限
+GRANT USAGE, CREATE ON SCHEMA public TO ting_storage_app;
+GRANT USAGE, CREATE ON SCHEMA storages TO ting_storage_app;
+--9.对现有对象授权，具有创建表和创建序列权限，和上面7重复
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ting_storage_app;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA storages TO ting_storage_app;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO ting_storage_app;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA storages TO ting_storage_app;
+--10.设置默认权限，保障未来创建的对象自动授权
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO ting_storage_app;
+ALTER DEFAULT PRIVILEGES IN SCHEMA storages GRANT ALL PRIVILEGES ON TABLES TO ting_storage_app;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON SEQUENCES TO ting_storage_app;
+ALTER DEFAULT PRIVILEGES IN SCHEMA storages GRANT ALL PRIVILEGES ON SEQUENCES TO ting_storage_app;
+---tingshuo 库存数据库结束---
+
+
+---五、tingshuo 智能ai数据库开始---
+--1.新建用户，并给用户与创建数据库权限,需要使用高权类似postgresql等高权用户
+--CREATE USER ting_ai_app WITH PASSWORD 'Aa@123456' CREATEDB;
+CREATE USER ting_ai_app WITH PASSWORD 'Aa@123456' ;
+ --2.新建数据库指定数据库编码格式
+CREATE DATABASE ting_ai ENCODING = 'UTF8';
+--3.授权用户具有创建 schema的高权权限，允许用户在该库中创建 Schema 的关键
+GRANT CREATE ON DATABASE ting_ai TO ting_ai_app;
+--4.创建 对应用户的schema，具有创建 schema的用户，且需要在对应的用户下执行
+CREATE SCHEMA ais;
+--5.其他高权执行
+GRANT ALL ON SCHEMA ais  TO ting_ai_app;
+--6.指定用户具有连接权限，授予 CONNECT 权限
+GRANT CONNECT ON DATABASE ting_ai TO ting_ai_app;
+--7.授予数据库所有权限给指定用户， PostgreSQL 中，1.数据库级别的 ALL PRIVILEGES 只包含 CONNECT, CREATE, TEMPORARY。2.它不包含对表、Schema、函数等对象的权限
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO ting_ai_app;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA ais TO ting_ai_app;
+--8.授予模式使用权限
+GRANT USAGE, CREATE ON SCHEMA public TO ting_ai_app;
+GRANT USAGE, CREATE ON SCHEMA ais TO ting_ai_app;
+--9.对现有对象授权，具有创建表和创建序列权限，和上面7重复
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ting_ai_app;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA ais TO ting_ai_app;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO ting_ai_app;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA ais TO ting_ai_app;
+--10.设置默认权限，保障未来创建的对象自动授权
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO ting_ai_app;
+ALTER DEFAULT PRIVILEGES IN SCHEMA ais GRANT ALL PRIVILEGES ON TABLES TO ting_ai_app;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON SEQUENCES TO ting_ai_app;
+ALTER DEFAULT PRIVILEGES IN SCHEMA ais GRANT ALL PRIVILEGES ON SEQUENCES TO ting_ai_app;
+---tingshuo 智能ai数据库结束---
+
+---六、tingshuo 资产数据库开始---
+--1.新建用户，并给用户与创建数据库权限,需要使用高权类似postgresql等高权用户
+--CREATE USER ting_assets_app WITH PASSWORD 'Aa@123456' CREATEDB;
+CREATE USER ting_asset_app WITH PASSWORD 'Aa@123456' ;
+ --2.新建数据库指定数据库编码格式
+CREATE DATABASE ting_asset ENCODING = 'UTF8';
+--3.授权用户具有创建 schema的高权权限，允许用户在该库中创建 Schema 的关键
+GRANT CREATE ON DATABASE ting_asset TO ting_asset_app;
+--4.创建 对应用户的schema，具有创建 schema的用户，且需要在对应的用户下执行
+CREATE SCHEMA assets;
+--5.其他高权执行
+GRANT ALL ON SCHEMA assets  TO ting_asset_app;
+--6.指定用户具有连接权限，授予 CONNECT 权限
+GRANT CONNECT ON DATABASE ting_asset TO ting_asset_app;
+--7.授予数据库所有权限给指定用户， PostgreSQL 中，1.数据库级别的 ALL PRIVILEGES 只包含 CONNECT, CREATE, TEMPORARY。2.它不包含对表、Schema、函数等对象的权限
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO ting_asset_app;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA assets TO ting_asset_app;
+--8.授予模式使用权限
+GRANT USAGE, CREATE ON SCHEMA public TO ting_asset_app;
+GRANT USAGE, CREATE ON SCHEMA assets TO ting_asset_app;
+--9.对现有对象授权，具有创建表和创建序列权限，和上面7重复
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ting_asset_app;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA assets TO ting_asset_app;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO ting_asset_app;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA assets TO ting_asset_app;
+--10.设置默认权限，保障未来创建的对象自动授权
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO ting_asset_app;
+ALTER DEFAULT PRIVILEGES IN SCHEMA assets GRANT ALL PRIVILEGES ON TABLES TO ting_asset_app;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON SEQUENCES TO ting_asset_app;
+ALTER DEFAULT PRIVILEGES IN SCHEMA assets GRANT ALL PRIVILEGES ON SEQUENCES TO ting_asset_app;
+---tingshuo 资产数据库结束---
+
+---相关业务库建库语句---
