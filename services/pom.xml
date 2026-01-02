@@ -25,6 +25,9 @@
         <module>storage-service</module>
         <module>ai-service</module>
         <module>asset-service</module>
+        <module>auth-service</module>
+        <module>auth-service/auth-api</module>
+        <module>auth-service/auth-biz</module>
     </modules>
 
 </project>

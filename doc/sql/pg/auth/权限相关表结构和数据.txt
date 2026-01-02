@@ -1,0 +1,108 @@
+-- 用户表
+CREATE TABLE sys_user (
+    id BIGSERIAL PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(100) NOT NULL, -- 建议 BCrypt 加密后存储
+    nickname VARCHAR(50),
+    phone VARCHAR(20),
+    email VARCHAR(50),
+    dept_id BIGINT DEFAULT 0,
+    status INT DEFAULT 1, -- 1:正常 0:禁用
+    create_time TIMESTAMP DEFAULT NOW(),
+    update_time TIMESTAMP DEFAULT NOW()
+);
+
+-- 角色表
+CREATE TABLE sys_role (
+    id BIGSERIAL PRIMARY KEY,
+    role_code VARCHAR(50) UNIQUE NOT NULL,
+    role_name VARCHAR(50) NOT NULL,
+    description TEXT,
+    status INT DEFAULT 1,
+    create_time TIMESTAMP DEFAULT NOW(),
+    update_time TIMESTAMP DEFAULT NOW()
+);
+
+-- 菜单表
+CREATE TABLE sys_menu (
+    id BIGSERIAL PRIMARY KEY,
+    menu_name VARCHAR(50) NOT NULL,
+    parent_id BIGINT DEFAULT 0,
+    path VARCHAR(100),          -- 前端路由路径
+    component VARCHAR(100),     -- Vue 组件路径
+    icon VARCHAR(50),
+    type INT DEFAULT 1,         -- 1:目录 2:菜单 3:按钮
+    permission VARCHAR(100),    -- 权限标识，如 user:add
+    sort INT DEFAULT 0,
+    status INT DEFAULT 1,
+    create_time TIMESTAMP DEFAULT NOW(),
+    update_time TIMESTAMP DEFAULT NOW()
+);
+
+-- 部门表
+CREATE TABLE sys_dept (
+    id BIGSERIAL PRIMARY KEY,
+    dept_name VARCHAR(50) NOT NULL,
+    parent_id BIGINT DEFAULT 0,
+    sort INT DEFAULT 0,
+    status INT DEFAULT 1,
+    create_time TIMESTAMP DEFAULT NOW(),
+    update_time TIMESTAMP DEFAULT NOW()
+);
+
+-- 用户-角色关联
+CREATE TABLE sys_user_role (
+    user_id BIGINT NOT NULL,
+    role_id BIGINT NOT NULL,
+    PRIMARY KEY (user_id, role_id),
+    FOREIGN KEY (user_id) REFERENCES sys_user(id) ON DELETE CASCADE,
+    FOREIGN KEY (role_id) REFERENCES sys_role(id) ON DELETE CASCADE
+);
+
+-- 角色-菜单关联
+CREATE TABLE sys_role_menu (
+    role_id BIGINT NOT NULL,
+    menu_id BIGINT NOT NULL,
+    PRIMARY KEY (role_id, menu_id),
+    FOREIGN KEY (role_id) REFERENCES sys_role(id) ON DELETE CASCADE,
+    FOREIGN KEY (menu_id) REFERENCES sys_menu(id) ON DELETE CASCADE
+);
+
+
+-- 部门
+INSERT INTO sys_dept (id, dept_name, parent_id, sort, status) VALUES
+(1, '总公司', 0, 1, 1),
+(2, '技术部', 1, 1, 1);
+
+-- 用户（密码：123456，明文存储，后续建议用 BCrypt）
+INSERT INTO sys_user (id, username, password, nickname, phone, email, dept_id, status) VALUES
+(1, 'admin', '123456', '超级管理员', '13800138000', 'admin@example.com', 1, 1),
+(2, 'user1', '123456', '普通用户', '13900139000', 'user1@example.com', 2, 1);
+
+-- 角色
+INSERT INTO sys_role (id, role_code, role_name, description, status) VALUES
+(1, 'ROLE_ADMIN', '管理员', '拥有全部权限', 1),
+(2, 'ROLE_USER', '普通用户', '仅查看权限', 1);
+
+-- 菜单（模拟后台管理菜单）
+INSERT INTO sys_menu (id, menu_name, parent_id, path, component, icon, type, permission, sort) VALUES
+-- 根目录
+(1, '系统管理', 0, '/system', 'Layout', 'system', 1, '', 1),
+-- 子菜单
+(2, '用户管理', 1, 'user', 'system/user/index', 'user', 2, 'sys:user:list', 1),
+(3, '角色管理', 1, 'role', 'system/role/index', 'role', 2, 'sys:role:list', 2),
+(4, '菜单管理', 1, 'menu', 'system/menu/index', 'tree', 2, 'sys:menu:list', 3),
+
+-- 首页
+(10, '首页', 0, '/dashboard', 'dashboard/index', 'dashboard', 2, '', 0);
+
+-- 用户-角色关联
+INSERT INTO sys_user_role (user_id, role_id) VALUES
+(1, 1),  -- admin → ROLE_ADMIN
+(2, 2);  -- user1 → ROLE_USER
+
+-- 角色-菜单关联（管理员拥有所有菜单）
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES
+(1, 1), (1, 2), (1, 3), (1, 4), (1, 10),
+-- 普通用户只看首页
+(2, 10);

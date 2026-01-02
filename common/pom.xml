@@ -24,6 +24,7 @@
         <module>common-web</module>
         <module>common-nacos-dc</module>
         <module>common-seata</module>
+        <module>common-core</module>
     </modules>
 
 </project>

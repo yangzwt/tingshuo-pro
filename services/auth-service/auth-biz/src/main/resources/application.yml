@@ -1,0 +1,22 @@
+server:
+  port: 18087
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://192.168.6.41:5432/ting_auth?useSSL=false&currentSchema=auths
+    username: ting_auth_app
+    password: Aa@123456
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+jwt:
+  #secret: tingshuo-secret-key-2026
+  secret: RxGsCE/ZfSnCiFJMtLjAKDYlib/na2QqNk//hSXOt3SOJHFo0I6qAa8wm6IyrPyDtfaZ2E9db/0Aue8qon9N3g==
+  expiration: 3600000
+
+logging:
+  level:
+    com.tingshuo.auth.mapper: debug
