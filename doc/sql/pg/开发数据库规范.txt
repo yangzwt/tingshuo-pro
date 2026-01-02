@@ -215,5 +215,48 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA assets GRANT ALL PRIVILEGES ON TABLES TO ting
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON SEQUENCES TO ting_asset_app;
 ALTER DEFAULT PRIVILEGES IN SCHEMA assets GRANT ALL PRIVILEGES ON SEQUENCES TO ting_asset_app;
 ---tingshuo 资产数据库结束---
+---tingshuo 权限数据库开始---
+--1.新建用户，并给用户与创建数据库权限,需要使用高权类似postgresql等高权用户
+--CREATE USER ting_auth_app WITH PASSWORD 'Aa@123456' CREATEDB;--表示可以在运行时动态执行创建数据库的权限，高危
+CREATE USER ting_auth_app WITH PASSWORD 'Aa@123456' ;
+-- 2.新建数据库指定数据库编码格式，创建时可以指定对应编码和排序问题
+CREATE DATABASE ting_auth ENCODING = 'UTF8';
+--CREATE DATABASE ting_auth ENCODING = 'UTF8' LC_COLLATE = 'en_US.UTF-8' LC_CTYPE = 'en_US.UTF-8' TEMPLATE = template0;
+--3.授权用户具有创建 schema的高权权限，允许用户在该库中创建 Schema 的关键
+GRANT CREATE ON DATABASE ting_auth TO ting_auth_app;
+--查看授权是否成功
+SELECT datname, datacl FROM pg_database WHERE datname = 'ting_auth';
+--4.创建 对应用户的schema，具有创建 schema的用户，且需要在对应的用户下执行
+-- 以 ting_user_app 身份连接 ting_user 数据库后执行
+CREATE SCHEMA auths;
+--5.其他高权执行
+--CREATE SCHEMA users AUTHORIZATION ting_user_app;
+--授权对应schema 指定用户可以使用所有权限，授予 Schema 全部权限
+GRANT ALL ON SCHEMA auths  TO ting_auth_app;
+--6.指定用户具有连接权限，授予 CONNECT 权限
+GRANT CONNECT ON DATABASE ting_auth TO ting_auth_app;
+--7.授予数据库所有权限给指定用户， PostgreSQL 中，1.数据库级别的 ALL PRIVILEGES 只包含 CONNECT, CREATE, TEMPORARY。2.它不包含对表、Schema、函数等对象的权限
+--GRANT ALL PRIVILEGES ON DATABASE ting_user TO ting_user_app;
+--授予对特定 schema 下所有表的增删改查等权限，ON ALL TABLES IN SCHEMA 一次只能指定一个 Schema，不能写 public,users
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO ting_auth_app;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA auths TO ting_auth_app;
+--8.授予模式使用权限
+GRANT USAGE, CREATE ON SCHEMA public TO ting_auth_app;
+GRANT USAGE, CREATE ON SCHEMA auths TO ting_auth_app;
+--9.对现有对象授权，具有创建表和创建序列权限，和上面7重复
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ting_auth_app;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA auths TO ting_auth_app;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO ting_auth_app;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA auths TO ting_auth_app;
+--10.设置默认权限，保障未来创建的对象自动授权
+-- 假设未来表是由当前执行用户（如 postgres）创建的，要自动授权给 ting_user_app
+--重要提醒：ALTER DEFAULT PRIVILEGES 默认只影响当前角色创建的对象。如果你希望 ting_user_app 自己创建的表自动拥有权限（给自己），其实不需要设——因为 owner 自动拥有全部权限。
+--通常 DEFAULT PRIVILEGES 用于：A 用户创建对象，自动授权给 B 用户。
+--如果你是超级用户执行这些命令，那么默认权限只适用于超级用户未来创建的表，而不是 ting_user_app 创建的表
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO ting_auth_app;
+ALTER DEFAULT PRIVILEGES IN SCHEMA auths GRANT ALL PRIVILEGES ON TABLES TO ting_auth_app;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON SEQUENCES TO ting_auth_app;
+ALTER DEFAULT PRIVILEGES IN SCHEMA auths GRANT ALL PRIVILEGES ON SEQUENCES TO ting_auth_app;
 
+---tingshuo 权限数据库结束---
 ---相关业务库建库语句---

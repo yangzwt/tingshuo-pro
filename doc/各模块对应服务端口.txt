@@ -10,3 +10,5 @@ order-service 18083
 product-service 18085
 <!--听说库存模块-->
 storage-service 18086
+<!--听说授权模块-->
+suth-service 18087
