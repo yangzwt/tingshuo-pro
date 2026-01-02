@@ -1,5 +1,13 @@
 server:
   port: 18080 # 服务端口
+jwt:
+  secret: RxGsCE/ZfSnCiFJMtLjAKDYlib/na2QqNk//hSXOt3SOJHFo0I6qAa8wm6IyrPyDtfaZ2E9db/0Aue8qon9N3g==
+
+# 确保日志输出正常
+logging:
+  level:
+    com.tingshuo: DEBUG
+
 # spring cloud gateway 配置
 spring:
   cloud:
@@ -30,6 +38,11 @@ spring:
           uri: lb://tingshuo-product
           predicates:
               - Path=/product/**
+        # ========== 认证服务 ==========
+        - id: tingshuo-auth-route
+          uri: lb://tingshuo-auth
+          predicates:
+            - Path=/api/auth/user/**
 
 
 

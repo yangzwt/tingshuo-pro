@@ -19,12 +19,12 @@
     </properties>
     <modules>
         <module>user-service</module>
-        <module>asset-service</module>
+<!--        <module>asset-service</module>-->
         <module>product-service</module>
         <module>order-service</module>
         <module>storage-service</module>
-        <module>ai-service</module>
-        <module>asset-service</module>
+<!--        <module>ai-service</module>-->
+<!--        <module>asset-service</module>-->
         <module>auth-service</module>
         <module>auth-service/auth-api</module>
         <module>auth-service/auth-biz</module>

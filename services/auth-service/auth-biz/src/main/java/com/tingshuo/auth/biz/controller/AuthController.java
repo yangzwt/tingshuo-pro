@@ -50,11 +50,21 @@ public class AuthController {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", user.getUserId());
         claims.put("username", user.getUsername());
-
+        System.out.println("【AUTH】当前 JwtUtil.secret = " + jwtUtil.getSecret()); //
+        System.out.println("【AUTH】当前 JwtUtil.expiration = " + jwtUtil.getExpiration()); //
         String token = jwtUtil.generateToken(claims, user.getUsername());
+        System.out.println("【AUTH】生成的 Token = " + token);
+        String header = new String(java.util.Base64.getUrlDecoder().decode(token.split("\\.")[0]));
+        System.out.println("【AUTH】Token Header: " + header);
         return Result.success(token);
     }
 
+    /**
+     * 获取用户信息
+     * 直接获取请求头的令牌方式
+     * @param request
+     * @return
+     */
     @GetMapping("/user/info")
     public Result<UserVO> getUserInfo(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
@@ -73,12 +83,22 @@ public class AuthController {
         if (user == null) {
             return Result.fail("用户不存在");
         }
-
         UserVO vo = new UserVO();
         BeanUtils.copyProperties(user, vo);
         return Result.success(vo);
     }
 
+    @GetMapping("/user/infoNew")
+    public Result<UserVO> getUserInfoNew(@RequestHeader("X-User-Id") Long userId) {
+
+        SysUserEntity user = userService.findById(userId);
+        if (user == null) {
+            return Result.fail("用户不存在");
+        }
+        UserVO vo = new UserVO();
+        BeanUtils.copyProperties(user, vo);
+        return Result.success(vo);
+    }
     @GetMapping("/menu/list")
     public Result<List<MenuVO>> getMenuList(@RequestParam("userId") Long userId) {
         List<SysMenuEntity> menus = menuService.getMenusByUserId(userId);

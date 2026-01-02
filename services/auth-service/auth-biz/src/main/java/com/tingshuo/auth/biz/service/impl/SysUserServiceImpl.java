@@ -43,4 +43,12 @@ public class SysUserServiceImpl implements SysUserService {
 
         return false;
     }
+
+    @Override
+    public SysUserEntity findById(Long userId) {
+        if (userId == null){
+            return null;
+        }
+        return sysUserMapper.selectById(userId);
+    }
 }

@@ -16,4 +16,7 @@ public interface SysUserService {
     SysUserEntity findByUsername(String username);
 
     boolean matchesPassword(String rawPassword, String encodedPassword);
+
+    SysUserEntity findById(Long userId);
+
 }

@@ -4,6 +4,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +23,7 @@ import java.util.Map;
  * @description 类描述信息 JWT工具类
  */
 @Component
+@Data
 public class JwtUtil {
 
     @Value("${jwt.secret}")
@@ -29,19 +31,21 @@ public class JwtUtil {
 
     @Value("${jwt.expiration}")
     private Long expiration;
-
     private SecretKey getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secret);
+        System.out.println("【AUTH】原始 secret 长度: " + keyBytes.length + " 字节");
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
     public String generateToken(Map<String, Object> claims, String subject) {
+        System.out.println("【Auth】Signing token with secret: " + secret);
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
+                //.signWith(getSigningKey(), SignatureAlgorithm.HS512)
+                .signWith(getSigningKey())
                 .compact();
     }
 
