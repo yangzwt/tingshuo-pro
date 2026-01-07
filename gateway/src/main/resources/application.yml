@@ -1,15 +1,30 @@
 server:
   port: 18080 # 服务端口
+#  jwt 配置
 jwt:
+  # jwt 密钥
   secret: RxGsCE/ZfSnCiFJMtLjAKDYlib/na2QqNk//hSXOt3SOJHFo0I6qAa8wm6IyrPyDtfaZ2E9db/0Aue8qon9N3g==
+  expiration: 86400000 # token 过期时间
+  header: Authorization # jwt 请求头
+  tokenPrefix: Bearer # jwt 前缀
+
+
+
 
 # 确保日志输出正常
 logging:
   level:
     com.tingshuo: DEBUG
 
-# spring cloud gateway 配置
+
 spring:
+  # redis 配置
+  redis:
+    host: 192.168.6.41
+    port: 6379
+    password: 123456
+    database: 1
+  # spring cloud gateway 配置
   cloud:
     gateway:
       routes: # 路由配置

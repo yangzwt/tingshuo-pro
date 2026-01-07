@@ -25,12 +25,25 @@ import java.util.List;
  */
 @FeignClient(name = "auth-service", fallback = AuthApiFallback.class)
 public interface AuthApi {
+    /**
+     * 登录
+     * @param request
+     * @return
+     */
     @PostMapping("/api/auth/login")
     Result<String> login(@RequestBody LoginDTO request);
-
+    /**
+     * 获取用户信息
+     * @param token
+     * @return
+     */
     @GetMapping("/api/auth/user/info")
     Result<UserVO> getUserInfo(@RequestParam("token") String token);
-
+    /**
+     * 获取用户菜单
+     * @param userId
+     * @return
+     */
     @GetMapping("/api/auth/menu/list")
     Result<List<MenuVO>> getMenuList(@RequestParam("userId") Long userId);
 }
