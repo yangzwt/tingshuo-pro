@@ -9,9 +9,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * packageName com.tingshuo.common.core.security
@@ -32,20 +34,26 @@ public class JwtUtil {
     @Value("${jwt.expiration}")
     private Long expiration;
     private SecretKey getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secret);
-        System.out.println("【AUTH】原始 secret 长度: " + keyBytes.length + " 字节");
+        byte[] keyBytes = Decoders.BASE64.decode(secret.trim());
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
+    /**
+     *  生成令牌
+     * @param claims
+     * @param subject
+     * @return
+     */
     public String generateToken(Map<String, Object> claims, String subject) {
-        System.out.println("【Auth】Signing token with secret: " + secret);
+        String jti = UUID.randomUUID().toString(); // 唯一令牌ID
         return Jwts.builder()
-                .setClaims(claims)
+                .setId(jti) // 令牌 ID
+                //.setClaims(claims) // 添加自定义信息 会导致 ID 存储不在情况
+                .addClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                //.signWith(getSigningKey(), SignatureAlgorithm.HS512)
-                .signWith(getSigningKey())
+                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
                 .compact();
     }
 
@@ -67,12 +75,32 @@ public class JwtUtil {
                 .getSubject();
     }
 
-    public Long getUserIdFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        return claims.get("userId", Long.class);
+    /**
+     *  解析令牌
+     * @param token
+     * @return
+     */
+    public Claims parseClaims(String token) {
+        try {
+             return  Jwts.parser()
+                            .setSigningKey(getSigningKey())
+                            .parseClaimsJws(token)
+                            .getBody();
+        } catch (Exception e) {
+            e.getMessage();
+            return null;
+        }
+    }
+    /**
+     * 提供获取 jti 的方法
+     * @param token
+     * @return
+     */
+    public String getJtiFromToken(String token) {
+            Claims claims = parseClaims(token);
+            if (claims==null){
+                return null;
+            }
+         return claims.getId();
     }
 }

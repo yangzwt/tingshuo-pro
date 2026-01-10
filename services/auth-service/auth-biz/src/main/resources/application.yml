@@ -2,11 +2,19 @@ server:
   port: 18087
 
 spring:
+  # 数据源
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://192.168.6.41:5432/ting_auth?useSSL=false&currentSchema=auths
     username: ting_auth_app
     password: Aa@123456
+  # redis
+  redis:
+    host: 192.168.6.41
+    port: 6379
+    password: 123456
+    database: 1
+
 
 mybatis-plus:
   configuration:

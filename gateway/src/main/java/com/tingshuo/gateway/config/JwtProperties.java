@@ -26,5 +26,15 @@ public class JwtProperties {
      * 令牌前缀
      */
     private Long expiration =3600000L;
+    /**
+     * 刷新令牌前缀
+     */
+    private String header;
+    /**
+     * 令牌前缀
+     */
+    private String tokenPrefix;
+
+
 }
 

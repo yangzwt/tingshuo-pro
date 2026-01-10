@@ -57,7 +57,7 @@ spring:
         - id: tingshuo-auth-route
           uri: lb://tingshuo-auth
           predicates:
-            - Path=/api/auth/user/**
+            - Path=/api/auth/**
 
 
 
