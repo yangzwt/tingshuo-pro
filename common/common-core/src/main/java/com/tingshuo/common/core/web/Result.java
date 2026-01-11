@@ -11,7 +11,7 @@ import java.io.Serializable;
  * @version JDK 8
  * @className Result
  * @date 2026/1/1 17:16
- * @description 类描述信息
+ * @description 类描述信息 统一返回结果类
  */
 @Data
 public class Result <T> implements Serializable {

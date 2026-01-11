@@ -3,9 +3,11 @@
 ### 2.基于Git支持版本控制。
 ### 3.基于jdk1.8开发。
 ### 4.基于alibaba开源组件进行开发，支持多种主流数据库，如MySQL、Oracle、SQL Server、Postgresql等。
+#### 4.1.目前使用的数据库为Postgresql。
 ### 5.基于SpringBoot开发，使用SpringBoot内置Tomcat，无需配置Tomcat。
 ### 6.内置了Druid数据源，支持数据库连接池的监控和管理。
 ### 7.内置了MyBatis-plus框架，支持XML和注解两种方式的SQL映射。
+#### 7.1.mybatis-plus版本3.5.3
 ### 8.内置了Redis缓存，支持多种数据结构。
 ### 9.内置了RabbitMQ消息队列，支持多种消息模式。
 ### 10.内置了Elasticsearch搜索引擎，支持全文搜索和聚合查询,如Elasticsearch、Kibana、Logstash等。。
