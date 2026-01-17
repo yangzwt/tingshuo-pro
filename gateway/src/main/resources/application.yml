@@ -47,7 +47,6 @@ spring:
           uri: lb://tingshuo-storage
           predicates:
               - Path=/storage/**
-
         # ========== 商品服务 ==========
         - id: tingshuo-product-route
           uri: lb://tingshuo-product
@@ -58,6 +57,11 @@ spring:
           uri: lb://tingshuo-auth
           predicates:
             - Path=/api/auth/**
+        # ========== 优惠券服务 ==========
+        - id: tingshuo-coupon-route
+          uri: lb://tingshuo-coupon
+          predicates:
+            - Path=/api/coupon/**
 
 
 
