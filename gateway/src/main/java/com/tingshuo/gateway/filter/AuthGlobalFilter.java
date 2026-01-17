@@ -52,6 +52,7 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
     private static final List<String> WHITE_LIST = Arrays.asList(
             "/api/auth/login",
             "/api/auth/logout",
+            "/api/auth/refresh",
             "/doc.html",
             "/webjars/**",
             "/swagger-resources/**",
@@ -85,25 +86,40 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
             if (jti == null) {
                 return onError(exchange, "Token missing jti claim", HttpStatus.UNAUTHORIZED);
             }
+            // 4. 检查类型
+            String type = (String) claims.get("type");
+            if ("refresh".equals(type)) {
+                // 刷新令牌不能用于 API 访问
+                return onError(exchange, "Refresh token cannot be used for API access", HttpStatus.UNAUTHORIZED);
+            }
             // 3. 检查黑名单
             if (redisService.hasKey(BLACKLIST_PREFIX + jti)) {
                 return onError(exchange, "Token has been invalidated", HttpStatus.UNAUTHORIZED);
             }
-            // 3. 【关键修改】检查白名单：token 是否仍在 Redis 中（即未登出且未过期）
-            String tokenKey = "auth:token:" + jti;
-            // 安全地调用阻塞式 RedisService
-            return Mono.fromCallable(() -> redisService.hasKey(tokenKey))
-                    .subscribeOn(Schedulers.boundedElastic()) // 切换到弹性线程执行阻塞操作
-                    .flatMap(exists -> {
-                        if (!exists) {
-                            return onError(exchange, "Token not found or already logged out", HttpStatus.UNAUTHORIZED);
-                        }
-                        // 透传用户信息
-                        ServerHttpRequest newRequest = exchange.getRequest().mutate()
-                                .header("X-User-ID", claims.getSubject())
-                                .build();
-                        return chain.filter(exchange.mutate().request(newRequest).build());
-                    });
+            // 3. 【关键修改】检查白名单：token 是否仍在 Redis 中（即未登出且未过期）,暂时删除
+//            String tokenKey = "auth:token:" + jti;
+//            // 安全地调用阻塞式 RedisService
+//            return Mono.fromCallable(() -> redisService.hasKey(tokenKey))
+//                    .subscribeOn(Schedulers.boundedElastic()) // 切换到弹性线程执行阻塞操作
+//                    .flatMap(exists -> {
+//                        if (!exists) {
+//                            return onError(exchange, "Token not found or already logged out", HttpStatus.UNAUTHORIZED);
+//                        }
+//                        // 透传用户信息
+//                        ServerHttpRequest newRequest = exchange.getRequest().mutate()
+//                                .header("X-User-ID", claims.getSubject().toString())
+//                                .header("X-User-Name", claims.get("username").toString())
+//                                .build();
+//                        return chain.filter(exchange.mutate().request(newRequest).build());
+//                    });
+            //不再检查白名单！直接放行
+            ServerHttpRequest newRequest = request.mutate()
+                    //.header("X-User-ID", claims.getSubject())          // subject = username
+                    .header("X-User-ID", claims.get("userId").toString())
+                    .header("X-User-Name", (String) claims.get("username"))
+                    .build();
+
+            return chain.filter(exchange.mutate().request(newRequest).build());
         } catch (Exception e) {
             e.printStackTrace();
             //System.out.println("【Gateway】Error parsing token: " + e.getMessage());

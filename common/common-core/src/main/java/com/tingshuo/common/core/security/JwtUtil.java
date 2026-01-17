@@ -33,6 +33,8 @@ public class JwtUtil {
 
     @Value("${jwt.expiration}")
     private Long expiration;
+    private static final long ACCESS_TOKEN_EXPIRATION = 15 * 60 * 1000; // 15分钟
+    private static final long REFRESH_TOKEN_EXPIRATION = 2 * 60 * 60 * 1000; // 2小时
     private SecretKey getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secret.trim());
         return Keys.hmacShaKeyFor(keyBytes);
@@ -102,5 +104,34 @@ public class JwtUtil {
                 return null;
             }
          return claims.getId();
+    }
+
+    /**
+     *  生成刷新令牌
+     * @param claims
+     * @return
+     */
+    public String generateRefreshToken(Map<String, Object> claims) {
+        String jti = UUID.randomUUID().toString();
+        claims.put("jti", jti);
+        claims.put("type", "refresh"); // 标记类型
+
+        return Jwts.builder()
+                //.setClaims(claims)
+                .addClaims(claims)
+                .setSubject("refresh")
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
+                .compact();
+    }
+    // 别名（可选）
+    /**
+     *  获取 jti
+     * @param refreshToken
+     * @return
+     */
+    public String getJtiFromRefreshToken(String refreshToken) {
+        return getJtiFromToken(refreshToken);
     }
 }
