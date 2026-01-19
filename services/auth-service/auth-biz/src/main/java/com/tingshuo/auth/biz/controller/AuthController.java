@@ -5,6 +5,7 @@ import com.tingshuo.auth.api.vo.MenuVO;
 import com.tingshuo.auth.api.vo.UserVO;
 import com.tingshuo.auth.biz.entity.SysMenuEntity;
 import com.tingshuo.auth.biz.entity.SysUserEntity;
+import com.tingshuo.auth.biz.service.RbacService;
 import com.tingshuo.auth.biz.service.SysMenuService;
 import com.tingshuo.auth.biz.service.SysUserService;
 import com.tingshuo.common.core.security.JwtUtil;
@@ -46,6 +47,8 @@ public class AuthController {
 
     @Autowired
     private SysMenuService menuService;
+    @Autowired
+    private RbacService rbacService;
 
     private static final String BLACKLIST_PREFIX = "jwt:blacklist:";
     private static final String TOKEN_PREFIX = "auth:token:";
@@ -57,13 +60,14 @@ public class AuthController {
      * @return
      */
     @PostMapping("/login")
-    public Result<Map<String, String>> login(@RequestBody LoginDTO request) {
+    public Result<Map<String, Object>> login(@RequestBody LoginDTO request) {
         //1. 用户认证
         SysUserEntity user = userService.findByUsername(request.getUsername());
         if (user == null || !userService.matchesPassword(request.getPassword(), user.getPassword())) {
             return Result.fail("用户名或密码错误");
         }
-
+        // 2. 查询权限
+        List<String> permissions = rbacService.selectPermissionsByUserId(user.getUserId());
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", user.getUserId().toString());
         claims.put("username", user.getUsername());
@@ -91,9 +95,10 @@ public class AuthController {
         }
         // 设置集合过期时间（可选，防止长期残留）
         redisTemplate.expire("auth:user:" + user.getUserId().toString(), ttlSeconds, TimeUnit.SECONDS);
-        Map<String, String> map=new HashMap<>();
+        Map<String, Object> map=new HashMap<>();
         map.put("accessToken",token);
         map.put("refreshToken",refreshToken);
+        map.put("permissions",permissions);//返回用户对应的权限
         return Result.success(map);
     }
 

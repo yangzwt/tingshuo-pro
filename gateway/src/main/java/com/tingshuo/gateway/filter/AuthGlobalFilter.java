@@ -10,21 +10,16 @@ import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
 import javax.annotation.PostConstruct;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * packageName com.tingshuo.gateway.filter
@@ -47,6 +42,9 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
     private RedisService redisService;
     // 黑名单（JTI）前缀
     private static final String BLACKLIST_PREFIX = "jwt:blacklist:";
+    // 【新增】路径与所需权限的映射（支持 AntPathMatcher）
+    //private static final Map<String, String> PATH_PERMISSION_MAP = new HashMap<>();
+    private final Map<String, String> PATH_PERMISSION_MAP = new HashMap<>();
 
     // 白名单（支持 Ant 风格）
     private static final List<String> WHITE_LIST = Arrays.asList(
@@ -112,6 +110,28 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
 //                                .build();
 //                        return chain.filter(exchange.mutate().request(newRequest).build());
 //                    });
+            //2026-01-19 【新增】权限校验
+            String requiredPermission = getRequiredPermission(path);
+            if (requiredPermission != null) {
+                // 从 JWT claims 中获取用户权限列表
+                Object permsObj = claims.get("permissions");
+                List<String> userPermissions = new ArrayList<>();
+
+                if (permsObj instanceof List) {
+                    // 确保元素是 String
+                    for (Object item : (List<?>) permsObj) {
+                        if (item instanceof String) {
+                            userPermissions.add((String) item);
+                        }
+                    }
+                }
+
+                // 校验是否包含所需权限
+                if (!userPermissions.contains(requiredPermission)) {
+                    return onError(exchange, "权限不足: 缺少 [" + requiredPermission + "]", HttpStatus.FORBIDDEN);
+                }
+            }
+
             //不再检查白名单！直接放行
             ServerHttpRequest newRequest = request.mutate()
                     //.header("X-User-ID", claims.getSubject())          // subject = username
@@ -148,6 +168,29 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
         return response.writeWith(Mono.just(buffer));
     }
 
+    /**
+     *  初始化权限映射表
+     */
+    @PostConstruct
+    public void initPermissionMap() {
+        PATH_PERMISSION_MAP.put("/api/coupon/create", "coupon:create");
+        PATH_PERMISSION_MAP.put("/api/coupon/list", "coupon:read");
+        PATH_PERMISSION_MAP.put("/api/order/create", "order:create");
+        PATH_PERMISSION_MAP.put("/api/user/**", "user:read");
+        // 内部接口：只允许服务间调用（可单独处理）
+       // PATH_PERMISSION_MAP.put("/api/coupon/internal/**", "system:internal");
+    }
+    /**
+     * 根据请求路径匹配所需的权限编码
+     */
+    private String getRequiredPermission(String requestPath) {
+        for (Map.Entry<String, String> entry : PATH_PERMISSION_MAP.entrySet()) {
+            if (pathMatcher.match(entry.getKey(), requestPath)) {
+                return entry.getValue();
+            }
+        }
+        return null; // 无需权限
+    }
     @Override
     public int getOrder() {
         return -100; // 数值越小，优先级越高
