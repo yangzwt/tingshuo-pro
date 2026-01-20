@@ -30,7 +30,7 @@ public interface SysMenuMapper extends BaseMapper<SysMenuEntity> {
     @Select("<script>" +
             "SELECT permission FROM auths.sys_menu WHERE id IN " +
             "<foreach item='id' collection='menuIds' open='(' separator=',' close=')'>#{id}</foreach>" +
-            " AND permission IS NOT NULL" +
+            " AND permission IS NOT NULL and permission !='' " +
             "</script>")
     List<String> selectPermissionsByIds(@Param("menuIds") List<Long> menuIds);
 }

@@ -71,6 +71,7 @@ public class AuthController {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", user.getUserId().toString());
         claims.put("username", user.getUsername());
+        claims.put("permissions",permissions);//存入 jwt
         //2. 生成令牌
         String token = jwtUtil.generateToken(claims, user.getUsername());//正常登录token
         //3. 刷新令牌

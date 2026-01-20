@@ -112,12 +112,17 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
 //                    });
             //2026-01-19 【新增】权限校验
             String requiredPermission = getRequiredPermission(path);
+            System.out.println("【Gateway】Required permission for path " + path + ": " + requiredPermission);
             if (requiredPermission != null) {
                 // 从 JWT claims 中获取用户权限列表
                 Object permsObj = claims.get("permissions");
                 List<String> userPermissions = new ArrayList<>();
-
-                if (permsObj instanceof List) {
+                System.out.println("【Gateway】Raw permissions from JWT: " + permsObj);
+                System.out.println("【Gateway】Is null? " + (permsObj == null));
+                if (permsObj != null) {
+                    System.out.println("【Gateway】Class: " + permsObj.getClass().getName());
+                }
+                if (permsObj != null && permsObj instanceof List) {
                     // 确保元素是 String
                     for (Object item : (List<?>) permsObj) {
                         if (item instanceof String) {

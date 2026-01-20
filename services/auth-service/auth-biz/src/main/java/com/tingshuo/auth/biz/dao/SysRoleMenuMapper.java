@@ -17,9 +17,6 @@ import java.util.List;
  */
 @Mapper
 public interface SysRoleMenuMapper extends BaseMapper<SysRoleMenuEntity> {
-    @Select("<script>" +
-            "SELECT menu_id FROM auths.sys_role_menu WHERE role_id IN " +
-            "<foreach item='id' collection='roleIds' open='(' separator=',' close=')'>#{id}</foreach>" +
-            "</script>")
-    List<Long> selectMenuIdsByRoleIds(@Param("roleIds") List<Long> roleIds);
+
+    List<Long> selectMenuIdsByRoleIds(List<Long> roleIds);
 }
