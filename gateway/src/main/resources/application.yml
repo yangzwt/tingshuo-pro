@@ -58,6 +58,11 @@ spring:
           predicates:
             - Path=/api/auth/**
         # ========== 优惠券服务 ==========
+        - id: tingshuo-coupon-user-route
+          uri: lb://tingshuo-coupon
+          # 优惠券服务 单独配置 核销接口流量控制
+          predicates:
+            - Path=/api/coupon/internal/use
         - id: tingshuo-coupon-route
           uri: lb://tingshuo-coupon
           predicates:
@@ -67,8 +72,11 @@ spring:
 
     # sentinel 限流配置
     sentinel:
+      enabled: true # 启用Sentinel
+      eager: true # 立即初始化Sentinel，避免懒加载导致首次调用无保护
       transport:
-        dashboard: 192.168.6.41:19080 # sentinel 控制台地址
+        #dashboard: 192.168.6.41:19080 # sentinel 控制台地址
+        dashboard: 127.0.0.1:19080 # sentinel 控制台地址
         port: 8719 # sentinel 端口
       datasource:
         ds1: # sentinel 配置
