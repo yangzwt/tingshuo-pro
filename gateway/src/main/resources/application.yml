@@ -67,6 +67,11 @@ spring:
           uri: lb://tingshuo-coupon
           predicates:
             - Path=/api/coupon/**
+        # ========== 积分服务 ==========
+        - id: tingshuo-points-route
+          uri: lb://tingshuo-points
+          predicates:
+            - Path=/api/points/**
 
 
 

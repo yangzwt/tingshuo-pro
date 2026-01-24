@@ -1,0 +1,14 @@
+CREATE TABLE user_points (
+  user_id BIGINT PRIMARY KEY,
+  total_points INT DEFAULT 0
+);
+--记录表
+CREATE TABLE points_record (
+  id bigserial NOT NULL,
+  user_id BIGINT NOT NULL,
+  change_value INT NOT NULL,
+  reason VARCHAR(100) NOT NULL,
+  balance_after INT NOT NULL,
+  create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 使用TIMESTAMP代替DATETIME，并设置默认值为当前时间
+  PRIMARY KEY (id)
+);

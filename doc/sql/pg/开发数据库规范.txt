@@ -292,4 +292,38 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA coupon GRANT ALL PRIVILEGES ON TABLES TO ting
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON SEQUENCES TO ting_coupon_app;
 ALTER DEFAULT PRIVILEGES IN SCHEMA coupon GRANT ALL PRIVILEGES ON SEQUENCES TO ting_coupon_app;
 --tingshuo 优惠券数据库结束 coupon---
+--tingshuo 积分数据库开始 points---
+--1.新建用户，并给用户与创建数据库权限,需要使用高权类似postgresql等高权用户
+--CREATE USER ting_points_app WITH PASSWORD 'Aa@123456' CREATEDB;
+CREATE USER ting_points_app WITH PASSWORD 'Aa@123456' ;
+
+ --2.新建数据库指定数据库编码格式
+CREATE DATABASE ting_points ENCODING = 'UTF8';
+--3.授权用户具有创建 schema的高权权限，允许用户在该库中创建 Schema 的关键
+GRANT CREATE ON DATABASE ting_points TO ting_points_app;
+--4.创建 对应用户的schema，具有创建 schema的用户，且需要在对应的用户下执行
+CREATE SCHEMA points;
+--5.其他高权执行
+GRANT ALL ON SCHEMA points  TO ting_points_app;
+--6.指定用户具有连接权限，授予 CONNECT 权限
+GRANT CONNECT ON DATABASE ting_points TO ting_points_app;
+--7.授予数据库所有权限给指定用户， PostgreSQL 中，1.数据库级别的 ALL PRIVILEGES 只包含 CONNECT, CREATE, TEMPORARY。2.它不包含对表、Schema、函数等对象的权限
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO ting_points_app;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA points TO ting_points_app;
+--8.授予模式使用权限
+GRANT USAGE, CREATE ON SCHEMA public TO ting_points_app;
+GRANT USAGE, CREATE ON SCHEMA points TO ting_points_app;
+--9.对现有对象授权，具有创建表和创建序列权限，和上面7重复
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ting_points_app;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA points TO ting_points_app;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO ting_points_app;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA points TO ting_points_app;
+--10.设置默认权限，保障未来创建的对象自动授权
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO ting_points_app;
+ALTER DEFAULT PRIVILEGES IN SCHEMA points GRANT ALL PRIVILEGES ON TABLES TO ting_points_app;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON SEQUENCES TO ting_points_app;
+ALTER DEFAULT PRIVILEGES IN SCHEMA points GRANT ALL PRIVILEGES ON SEQUENCES TO ting_points_app;
+--tingshuo 积分数据库结束 points---
+
+
 ---相关业务库建库语句---

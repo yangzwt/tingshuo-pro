@@ -14,3 +14,5 @@ storage-service 18086
 auth-service 18087
 <!--听说优化券模块-->
 coupon-service 18088
+<!--听说积分模块-->
+points-service 18089

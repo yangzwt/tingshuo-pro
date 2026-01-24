@@ -11,13 +11,14 @@ import org.springframework.web.bind.annotation.*;
  * @version JDK 8
  * @className InternalCouponController
  * @date 2026/1/17 18:50
- * @description 类描述信息
+ * @description 类描述信息 内部优惠券服务
  */
 @RestController
 @RequestMapping("/api/coupon/internal")
 public class InternalCouponController {
     @Autowired
     private CouponService couponService;
+
     /**
      * 订单服务调用：核销优惠券
      * @param request

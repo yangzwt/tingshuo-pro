@@ -29,6 +29,7 @@
         <module>auth-service/auth-api</module>
         <module>auth-service/auth-biz</module>
         <module>coupon-service</module>
+        <module>points-service</module>
     </modules>
 
 </project>

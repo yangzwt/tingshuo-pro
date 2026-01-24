@@ -6,7 +6,9 @@ import com.tingshuo.coupon.dao.UserCouponMapper;
 import com.tingshuo.coupon.dto.CreateCouponDTO;
 import com.tingshuo.coupon.entity.CouponEntity;
 import com.tingshuo.coupon.entity.UserCouponEntity;
+import com.tingshuo.coupon.feign.PointsFeignClient;
 import com.tingshuo.coupon.service.CouponService;
+import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,8 @@ public class CouponServiceImpl implements CouponService {
     private CouponMapper couponMapper;
     @Autowired
     private UserCouponMapper userCouponMapper;
+    @Autowired
+    private PointsFeignClient pointsFeignClient;
     /**
      * 创建优惠券
      * @param dto
@@ -74,6 +78,7 @@ public class CouponServiceImpl implements CouponService {
      * @return
      */
     @Override
+    @GlobalTransactional(name = "use-coupon-add-points", rollbackFor = Exception.class)
     public boolean useCoupon(Long userId, String couponCode) {
         // 1. 查用户券记录（未使用）
         UserCouponEntity userCoupon = userCouponMapper.selectOne(
@@ -106,6 +111,9 @@ public class CouponServiceImpl implements CouponService {
         userCoupon.setUpdateTime(now);
         userCouponMapper.updateById(userCoupon);
 
+        // 4. 增加积分（调用 points-service）
+        pointsFeignClient.addPoints(userId, 50, "核销优惠券");
+        //throw new RuntimeException("测试事务");// 手动测试seata事务
         return true;
     }
 }

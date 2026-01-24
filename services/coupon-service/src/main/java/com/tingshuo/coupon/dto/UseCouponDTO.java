@@ -12,5 +12,12 @@ import lombok.Data;
 @Data
 public class UseCouponDTO {
     private Long userId;
+    /**
+     * 优惠券码
+     */
     private String couponCode;
+    /**
+     * 积分变动值
+     */
+    private Integer points; // 积分变动值（+50）
 }
