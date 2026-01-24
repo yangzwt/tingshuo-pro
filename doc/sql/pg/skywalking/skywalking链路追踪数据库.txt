@@ -1,0 +1,12 @@
+-- 链路跟踪对应的数据库建库与建用户相关
+-- 创建专用数据库（字符集必须 utf8mb4）
+CREATE DATABASE skywalking DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+
+-- 创建专用用户（更安全）
+CREATE USER 'skywalking'@'%' IDENTIFIED BY 'Aa@123456';
+
+-- 授权
+GRANT ALL PRIVILEGES ON skywalking.* TO 'skywalking'@'%';
+
+-- 刷新权限
+FLUSH PRIVILEGES;
